@@ -136,5 +136,5 @@ pm.setKeyframe(render_cam_transform, s = False)
 pm.lookThru(render_cam_transform)
 
 
-#select ocio node at end
+#select ocio node at the end
 pm.select(ocio_node, r = True)
