@@ -43,39 +43,51 @@
 //get_config_from_env
 OCIO::ConstConfigRcPtr OCIO_functionality::get_config_from_env()
 {
-
+	//clear all cachces
+	OCIO::ClearAllCaches();
+	
 	//config
 	OCIO::ConstConfigRcPtr config;
-	config = OCIO::Config::CreateFromEnv();
-
-	//config exists
-	if (!config)
+	
+	try
 	{
-		//log
-		std::cout << "Config from env. var. does not exists" << std::endl;
-	};
+		//assign config
+		config = OCIO::Config::CreateFromEnv();
 
+		//sanity check (throws exception if something is wrong)
+		config->sanityCheck();
+	}
+	catch (OCIO::Exception& exception)
+	{
+		std::cerr << "OpenColorIO Error: " << exception.what() << "\nReturning empty config." << std::endl;
+		return 0;
+	}
+	
 	return config;
 };
 
 //get_config_from_file
 OCIO::ConstConfigRcPtr OCIO_functionality::get_config_from_file(std::string& file_path)
 {
-
+	//clear all cachces
+	OCIO::ClearAllCaches();
+	
 	//config
 	OCIO::ConstConfigRcPtr config;
-	config = OCIO::Config::CreateFromFile(file_path.c_str());
-
-	//config exists
-	if (!config)
+	
+	try
 	{
-		//fmt_log_message
-		boost::format fmt_log_message("Config from path: %s does not exists");
-		fmt_log_message % file_path;
-
-		//log
-		std::cout << fmt_log_message.str() << std::endl;
-	};
+		//assign config
+		config = OCIO::Config::CreateFromFile(file_path.c_str());
+		
+		//sanity check (throws exception if something is wrong)
+		config->sanityCheck();
+	}
+	catch (OCIO::Exception& exception)
+	{
+		std::cerr << "OpenColorIO Error: " << exception.what() << "\nReturning empty config." << std::endl;
+		return 0;
+	}
 
 	return config;
 };
@@ -91,6 +103,8 @@ std::vector<std::string> OCIO_functionality::get_colorspace_names(OCIO::ConstCon
 	{
 		//log
 		std::cout << "Config does not exists. Returning empty colorspace names vector." << std::endl;
+		//no_config entry
+		colorspace_names.push_back(std::string("no_config"));
 		return colorspace_names;
 	};
 
@@ -163,6 +177,146 @@ void OCIO_functionality::color_transform_single_pixel(float*& r, float*& g, floa
 	//apply transform
 	processor->apply(planar_image);
 };
+
+//get_config_info
+std::string OCIO_functionality::get_config_info(OCIO::ConstConfigRcPtr& config)
+{
+	//config_info
+	std::string config_info("No Config");
+
+	//config exists
+	if (!config)
+	{
+		//log
+		std::cout << "Config does not exists. No config info aquired" << std::endl;
+		//return
+		return config_info;
+	};
+
+	
+	
+	//ColorSpace Names
+	//-----------------------------------------------
+	std::vector<std::string> vec_colorspace_names;
+	for (int index = 0; index < config->getNumColorSpaces(); index++)
+	{
+		//append to vector
+		std::string colorspace_name(config->getColorSpaceNameByIndex(index));
+		vec_colorspace_names.push_back(colorspace_name);
+	};
+
+	//oss_colorspace_names
+	std::ostringstream oss_colorspace_names;
+	if (!vec_colorspace_names.empty())
+	{
+		// Convert all but the last element to avoid a trailing ","
+		std::copy(vec_colorspace_names.begin(), vec_colorspace_names.end() - 1,
+			std::ostream_iterator<std::string>(oss_colorspace_names, ", "));
+
+		// Now add the last element with no delimiter
+		oss_colorspace_names << vec_colorspace_names.back();
+	}
+
+
+
+	//Role Names
+	//-----------------------------------------------
+	std::vector<std::string> vec_role_names;
+	for (int index = 0; index < config->getNumRoles(); index++)
+	{
+		//append to vector
+		std::string role_name(config->getRoleName(index));
+		vec_role_names.push_back(role_name);
+	};
+
+	//oss_role_names
+	std::ostringstream oss_role_names;
+	if (!vec_role_names.empty())
+	{
+		// Convert all but the last element to avoid a trailing ","
+		std::copy(vec_role_names.begin(), vec_role_names.end() - 1,
+			std::ostream_iterator<std::string>(oss_role_names, ", "));
+
+		// Now add the last element with no delimiter
+		oss_role_names << vec_role_names.back();
+	}
+
+
+
+	//Display Names
+	//-----------------------------------------------
+	std::vector<std::string> vec_display_names;
+	for (int index = 0; index < config->getNumDisplays(); index++)
+	{
+		//append to vector
+		std::string display_name(config->getDisplay(index));
+		vec_display_names.push_back(display_name);
+	};
+
+	//oss_display_names
+	std::ostringstream oss_display_names;
+	if (!vec_display_names.empty())
+	{
+		// Convert all but the last element to avoid a trailing ","
+		std::copy(vec_display_names.begin(), vec_display_names.end() - 1,
+			std::ostream_iterator<std::string>(oss_display_names, ", "));
+
+		// Now add the last element with no delimiter
+		oss_display_names << vec_display_names.back();
+	}
+
+
+	
+
+
+
+	//Format
+	//-----------------------------------------------
+	//separator
+	std::string separator("-------------------------");
+	//fmt_config_info
+	boost::format fmt_config_info("Description: %s\n"
+		"Working Dir: %s\n"
+		"Search Path: %s\n"
+		"Strict parsing enabled: %s\n"
+		"OCIO version: %s\n"
+		"%s\n"
+		"Number of colorspaces: %s\n"
+		"Colorspace Names: %s\n"
+		"%s\n"
+		"Number of roles: %s\n"
+		"Role Names: %s\n"
+		"%s\n"
+		"Number of displays: %s\n"
+		"Default Display: %s\n"
+		"Display Names: %s\n"
+		);
+	fmt_config_info % config->getDescription()
+		% config->getWorkingDir()
+		% config->getSearchPath()
+		% config->isStrictParsingEnabled()
+		% OCIO::GetVersion()
+		% separator
+		% config->getNumColorSpaces()
+		% oss_colorspace_names.str()
+		% separator
+		% config->getNumRoles()
+		% oss_role_names.str()
+		% separator
+		% config->getNumDisplays()
+		% config->getDefaultDisplay()
+		% oss_display_names.str();
+
+
+
+	//set number of colorspaces
+	config_info = fmt_config_info.str();
+
+	//return
+	return config_info;
+};
+
+
 
 
 //Temp

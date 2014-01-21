@@ -44,6 +44,7 @@ namespace OCIO_functionality
 	std::string get_colorspace_name_from_index(OCIO::ConstConfigRcPtr&, int);
 	OCIO::ConstProcessorRcPtr get_processor(OCIO::ConstConfigRcPtr&, std::string&, std::string&);
 	void color_transform_single_pixel(float*&, float*&, float*&, OCIO::ConstProcessorRcPtr&);
+	std::string get_config_info(OCIO::ConstConfigRcPtr&);
 	//Temp
 	void print_config_info(OCIO::ConstConfigRcPtr&);
 	

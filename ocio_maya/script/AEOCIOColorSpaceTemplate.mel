@@ -1,0 +1,272 @@
+
+//AEOCIOColorSpaceTemplate
+global proc AEOCIOColorSpaceTemplate( string $nodeName ) { 
+    
+    //Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+
+	
+
+
+
+	//Header image
+    //-----------------------------------------
+    //-----------------------------------------
+    
+    //create header image
+    editorTemplate -callCustom "create_header_image" "update_header_image" "Dummy";
+
+
+	
+	
+
+
+
+	//scroll layout
+    editorTemplate -beginScrollLayout;
+
+    
+
+
+    
+    
+    
+
+
+    
+
+    //Begin Layout Input Color
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "Input Color" -collapse 0;
+
+    //input_color
+    editorTemplate -addControl "input_color";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+    
+
+   
+
+
+
+    //Begin Layout OCIO
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "OCIO" -collapse 0;
+
+    //verbose
+    //editorTemplate -addControl "verbose";
+
+    //Separator
+    //editorTemplate -addSeparator;
+
+    
+    //env_or_file
+    editorTemplate -addControl "env_or_file";
+    //config_file_path
+    editorTemplate -addControl "config_file_path";
+
+    
+    //Separator
+    editorTemplate -addSeparator;
+
+    
+    //input_colorspace
+    editorTemplate -addControl "input_colorspace";
+    //output_colorspace
+    editorTemplate -addControl "output_colorspace";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+
+
+
+
+
+    //Begin Layout Config Info
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "Config Info" -collapse 0;
+
+    //input_color
+    editorTemplate -callCustom "create_config_info" "update_config_info" "config_info";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+
+
+
+    
+
+
+    //Begin Layout Do not modify
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "Do not modify" -collapse 0;
+    
+    //output_color
+    editorTemplate -addControl "output_color" "dim_output_color";
+    
+    //last_env_or_file
+    editorTemplate -addControl "last_env_or_file" "dim_last_env_or_file";
+    
+    //last_config_file_path
+    editorTemplate -addControl "last_config_file_path" "dim_last_config_file_path";
+    
+    //internal_input_colorspace_index
+    editorTemplate -addControl "internal_input_colorspace_index" "dim_internal_input_colorspace_index";
+    
+    //internal_output_colorspace_index
+    editorTemplate -addControl "internal_output_colorspace_index" "dim_internal_output_colorspace_index";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+    
+    
+
+
+    //Extra controls for unspecified attributes
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -addExtraControls; 
+    
+    //end scroll layout
+    editorTemplate -endScrollLayout;
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+//Header image procedures
+//-----------------------------------------
+//-----------------------------------------
+
+global proc create_header_image(string $nodeName)
+{
+    //Header
+    image -w 400 -h 100 -image "ocio_maya_aetemplate.png";
+}
+
+
+global proc update_header_image(string $nodeName)
+{}
+
+
+
+
+
+
+//Config info procedures
+//-----------------------------------------
+//-----------------------------------------
+
+global proc create_config_info(string $nodeName)
+{
+    //node_name
+    string $node[];
+    tokenize $nodeName "." $node;
+    string $node_name = $node[0];
+
+    //config_info_text
+    string $config_info_text = `getAttr $nodeName`;
+
+    //test
+    text -label $config_info_text -bgc 0.164 0.164 0.164 -ww true -align "left";
+}
+
+
+global proc update_config_info(string $nodeName)
+{}
+
+
+
+
+
+
+
+//Dim attr. procedures
+//-----------------------------------------
+//-----------------------------------------
+
+
+global proc dim_output_color(string $nodeName){
+    
+	//Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+	//Dim
+    //-----------------------------------------
+    editorTemplate -dimControl $node[0] "output_color" true;
+}
+
+global proc dim_last_env_or_file(string $nodeName){
+    
+	//Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+	//Dim
+    //-----------------------------------------
+    editorTemplate -dimControl $node[0] "last_env_or_file" true;
+}
+
+global proc dim_last_config_file_path(string $nodeName){
+    
+	//Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+	//Dim
+    //-----------------------------------------
+    editorTemplate -dimControl $node[0] "last_config_file_path" true;
+}
+
+global proc dim_internal_input_colorspace_index(string $nodeName){
+    
+	//Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+	//Dim
+    //-----------------------------------------
+    editorTemplate -dimControl $node[0] "internal_input_colorspace_index" true;
+}
+
+global proc dim_internal_output_colorspace_index(string $nodeName){
+    
+	//Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+	//Dim
+    //-----------------------------------------
+    editorTemplate -dimControl $node[0] "internal_output_colorspace_index" true;
+}

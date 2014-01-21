@@ -68,6 +68,7 @@ public:
 	static MObject a_last_config_file_path;
 	static MObject a_internal_input_colorspace_index;
 	static MObject a_internal_output_colorspace_index;
+	static MObject a_config_info;
 	
 	//Methods
 	//Maya
@@ -80,6 +81,7 @@ public:
 	virtual MStatus compute(const MPlug &plug, MDataBlock &data);
 	//OCIO
 	void set_config(int);
+	void set_config_info();
 	bool config_exists();
 	void set_colorspace_names();
 	void set_processor();

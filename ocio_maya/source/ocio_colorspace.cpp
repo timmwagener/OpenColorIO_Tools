@@ -33,7 +33,7 @@
 //-----------------------------------------------
 //-----------------------------------------------
 MTypeId Ocio_colorspace::id(0x00002);
-MString Ocio_colorspace::type_name("OCIOColorspace");
+MString Ocio_colorspace::type_name("OCIOColorSpace");
 
 MObject Ocio_colorspace::a_verbose;
 
@@ -46,6 +46,7 @@ MObject Ocio_colorspace::a_config_file_path;
 MObject Ocio_colorspace::a_last_config_file_path;
 MObject Ocio_colorspace::a_internal_input_colorspace_index;
 MObject Ocio_colorspace::a_internal_output_colorspace_index;
+MObject Ocio_colorspace::a_config_info;
 
 
 
@@ -146,6 +147,10 @@ MStatus Ocio_colorspace::initialize()
 	nAttr.setStorable(true);
 	addAttribute(a_internal_output_colorspace_index);
 
+	//a_config_info
+	a_config_info = tAttr.create("config_info", "config_info", MFnData::kString);
+	tAttr.setStorable(true);
+	addAttribute(a_config_info);
 
 
 	//Attribute affects
@@ -257,7 +262,8 @@ MStatus Ocio_colorspace::compute(const MPlug &plug, MDataBlock &data)
 	MFloatVector& vec_input_color = h_input_color.asFloatVector();
 
 	//color_transform
-	color_transform(vec_input_color);
+	if (config_exists())
+		color_transform(vec_input_color);
 
 	//set output color
 	set_output_color(vec_input_color, data);
@@ -304,6 +310,21 @@ void Ocio_colorspace::set_config(int env_or_file)
 		
 };
 
+//set_config_info
+void Ocio_colorspace::set_config_info()
+{
+	//std_config_info
+	std::string std_config_info;
+
+	//assign config info
+	std_config_info = OCIO_functionality::get_config_info(config);
+
+	//p_config_info
+	MPlug p_config_info = get_plug(std::string("config_info"));
+	//set plug
+	p_config_info.setString(MString(std_config_info.c_str()));
+};
+
 //config_exists
 bool Ocio_colorspace::config_exists()
 {
@@ -333,6 +354,7 @@ void Ocio_colorspace::set_processor()
 		processor = 0;
 		//log
 		MGlobal::displayInfo(MString("Config does not exist. Processor not created."));
+		return;
 	};
 
 	//log
@@ -390,6 +412,9 @@ void Ocio_colorspace::node_created()
 
 	//set_config
 	set_config(get_env_or_file());
+	//set_config_info
+	set_config_info();
+	
 	//set_colorspace_names
 	set_colorspace_names();
 	//update dynamic enum attribute
@@ -425,6 +450,9 @@ void Ocio_colorspace::env_or_file_changed()
 {
 	//set_config
 	set_config(get_env_or_file());
+	//set_config_info
+	set_config_info();
+	
 	//set_colorspace_names
 	set_colorspace_names();
 	//update dynamic enum attribute
@@ -436,6 +464,9 @@ void Ocio_colorspace::env_or_file_changed()
 	set_internal_output_colorspace_index(0);
 	//set_last_env_or_file
 	set_last_env_or_file(get_env_or_file());
+	//if env_or_file == file set last_config_path
+	if (get_env_or_file())
+		set_last_config_file_path(get_config_file_path());
 
 	
 	//set_processor
@@ -463,6 +494,9 @@ void Ocio_colorspace::config_file_path_changed()
 
 	//set_config
 	set_config(get_env_or_file());
+	//set_config_info
+	set_config_info();
+	
 	//set_colorspace_names
 	set_colorspace_names();
 	//update dynamic enum attribute
