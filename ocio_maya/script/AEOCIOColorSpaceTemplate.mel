@@ -18,7 +18,7 @@ global proc AEOCIOColorSpaceTemplate( string $nodeName ) {
     //-----------------------------------------
     
     //create header image
-    editorTemplate -callCustom "create_header_image" "update_header_image" "Dummy";
+    editorTemplate -callCustom "ocio_colorspace_create_header_image" "ocio_colorspace_update_header_image" "Dummy";
 
 
 	
@@ -95,7 +95,7 @@ global proc AEOCIOColorSpaceTemplate( string $nodeName ) {
     editorTemplate -beginLayout "Config Info" -collapse 0;
 
     //input_color
-    editorTemplate -callCustom "create_config_info" "update_config_info" "config_info";
+    editorTemplate -callCustom "ocio_colorspace_create_config_info" "ocio_colorspace_update_config_info" "config_info";
 
     //End Layout Input Color
     editorTemplate -endLayout;
@@ -111,19 +111,19 @@ global proc AEOCIOColorSpaceTemplate( string $nodeName ) {
     editorTemplate -beginLayout "Do not modify" -collapse 0;
     
     //output_color
-    editorTemplate -addControl "output_color" "dim_output_color";
+    editorTemplate -addControl "output_color" "ocio_colorspace_dim_output_color";
     
     //last_env_or_file
-    editorTemplate -addControl "last_env_or_file" "dim_last_env_or_file";
+    editorTemplate -addControl "last_env_or_file" "ocio_colorspace_dim_last_env_or_file";
     
     //last_config_file_path
-    editorTemplate -addControl "last_config_file_path" "dim_last_config_file_path";
+    editorTemplate -addControl "last_config_file_path" "ocio_colorspace_dim_last_config_file_path";
     
     //internal_input_colorspace_index
-    editorTemplate -addControl "internal_input_colorspace_index" "dim_internal_input_colorspace_index";
+    editorTemplate -addControl "internal_input_colorspace_index" "ocio_colorspace_dim_internal_input_colorspace_index";
     
     //internal_output_colorspace_index
-    editorTemplate -addControl "internal_output_colorspace_index" "dim_internal_output_colorspace_index";
+    editorTemplate -addControl "internal_output_colorspace_index" "ocio_colorspace_dim_internal_output_colorspace_index";
 
     //End Layout Input Color
     editorTemplate -endLayout;
@@ -158,14 +158,14 @@ global proc AEOCIOColorSpaceTemplate( string $nodeName ) {
 //-----------------------------------------
 //-----------------------------------------
 
-global proc create_header_image(string $nodeName)
+global proc ocio_colorspace_create_header_image(string $nodeName)
 {
     //Header
     image -w 400 -h 100 -image "ocio_maya_aetemplate.png";
 }
 
 
-global proc update_header_image(string $nodeName)
+global proc ocio_colorspace_update_header_image(string $nodeName)
 {}
 
 
@@ -177,7 +177,7 @@ global proc update_header_image(string $nodeName)
 //-----------------------------------------
 //-----------------------------------------
 
-global proc create_config_info(string $nodeName)
+global proc ocio_colorspace_create_config_info(string $nodeName)
 {
     //node_name
     string $node[];
@@ -192,7 +192,7 @@ global proc create_config_info(string $nodeName)
 }
 
 
-global proc update_config_info(string $nodeName)
+global proc ocio_colorspace_update_config_info(string $nodeName)
 {}
 
 
@@ -206,7 +206,7 @@ global proc update_config_info(string $nodeName)
 //-----------------------------------------
 
 
-global proc dim_output_color(string $nodeName){
+global proc ocio_colorspace_dim_output_color(string $nodeName){
     
 	//Vars
     //-----------------------------------------
@@ -219,7 +219,7 @@ global proc dim_output_color(string $nodeName){
     editorTemplate -dimControl $node[0] "output_color" true;
 }
 
-global proc dim_last_env_or_file(string $nodeName){
+global proc ocio_colorspace_dim_last_env_or_file(string $nodeName){
     
 	//Vars
     //-----------------------------------------
@@ -232,7 +232,7 @@ global proc dim_last_env_or_file(string $nodeName){
     editorTemplate -dimControl $node[0] "last_env_or_file" true;
 }
 
-global proc dim_last_config_file_path(string $nodeName){
+global proc ocio_colorspace_dim_last_config_file_path(string $nodeName){
     
 	//Vars
     //-----------------------------------------
@@ -245,7 +245,7 @@ global proc dim_last_config_file_path(string $nodeName){
     editorTemplate -dimControl $node[0] "last_config_file_path" true;
 }
 
-global proc dim_internal_input_colorspace_index(string $nodeName){
+global proc ocio_colorspace_dim_internal_input_colorspace_index(string $nodeName){
     
 	//Vars
     //-----------------------------------------
@@ -258,7 +258,7 @@ global proc dim_internal_input_colorspace_index(string $nodeName){
     editorTemplate -dimControl $node[0] "internal_input_colorspace_index" true;
 }
 
-global proc dim_internal_output_colorspace_index(string $nodeName){
+global proc ocio_colorspace_dim_internal_output_colorspace_index(string $nodeName){
     
 	//Vars
     //-----------------------------------------

@@ -169,6 +169,69 @@ OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor(OCIO::ConstConfigRcP
 	return processor;
 };
 
+//get_processor_from_file_transform
+OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor_from_file_transform(std::string lut_file_path,
+																				std::string cccid,
+																				int direction,
+																				int interpolation)
+{
+	//processor
+	OCIO::ConstProcessorRcPtr processor;
+	
+	try
+	{
+		//config
+		OCIO::ConstConfigRcPtr config = OCIO::Config::Create();
+
+		//transform
+		OCIO::FileTransformRcPtr transform = OCIO::FileTransform::Create();
+		//lut_file_path
+		transform->setSrc(lut_file_path.c_str());
+		//cccid
+		if (cccid.size() > 0)
+			transform->setCCCId(cccid.c_str());
+
+		//direction
+		if (!direction) transform->setDirection(OCIO::TRANSFORM_DIR_FORWARD);
+		else transform->setDirection(OCIO::TRANSFORM_DIR_INVERSE);
+
+		//interpolation
+		if (interpolation == 0) transform->setInterpolation(OCIO::INTERP_NEAREST);
+		else if (interpolation == 1) transform->setInterpolation(OCIO::INTERP_LINEAR);
+		else if (interpolation == 2) transform->setInterpolation(OCIO::INTERP_TETRAHEDRAL);
+		else if (interpolation == 3) transform->setInterpolation(OCIO::INTERP_BEST);
+
+		//set processor
+		processor = config->getProcessor(transform, OCIO::TRANSFORM_DIR_FORWARD);
+
+		
+	}
+	catch (OCIO::Exception &e)
+	{
+		//log
+		std::cout << "Error creating processor. Returning 0\n" << e.what() << std::endl;
+		
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+	//Performance optimization if processor operation has no effect (then dont do it)
+	if (processor->isNoOp())
+	{
+		//log
+		std::cout << "Processor is noOp. Returning 0 to safe performance" << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+	//Return processor
+	return processor;
+
+};
+
 //color_transform_single_pixel
 void OCIO_functionality::color_transform_single_pixel(float*& r, float*& g, float*& b, OCIO::ConstProcessorRcPtr& processor)
 {
