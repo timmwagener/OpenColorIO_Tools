@@ -1,0 +1,147 @@
+
+//AEOCIOLogConvertTemplate
+global proc AEOCIOLogConvertTemplate( string $nodeName ) { 
+    
+    //Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+
+	
+
+
+
+	//Header image
+    //-----------------------------------------
+    //-----------------------------------------
+    
+    //create header image
+    editorTemplate -callCustom "ocio_log_convert_create_header_image" "ocio_log_convert_update_header_image" "Dummy";
+
+
+	
+	
+
+
+
+	
+
+
+    //scroll layout
+    editorTemplate -beginScrollLayout;
+
+    
+
+
+    
+    
+    
+
+
+    
+
+    //Begin Layout Input Color
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "Input Color" -collapse 0;
+
+    //input_color
+    editorTemplate -addControl "input_color";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+    
+
+   
+
+
+
+    //Begin Layout OCIO
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "OCIO" -collapse 0;
+
+    //verbose
+    //editorTemplate -addControl "verbose";
+
+    //Separator
+    //editorTemplate -addSeparator;
+
+    //env_or_file
+    editorTemplate -addControl "env_or_file";
+    
+    //config_file_path
+    editorTemplate -addControl "config_file_path";
+
+
+    //Separator
+    editorTemplate -addSeparator;
+
+    //operation
+    editorTemplate -addControl "operation";
+
+
+    //End Layout OCIO
+    editorTemplate -endLayout;
+
+
+
+
+
+    
+    
+    
+
+
+    //Extra controls for unspecified attributes
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -addExtraControls; 
+    
+    //end scroll layout
+    editorTemplate -endScrollLayout;
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+//Header image procedures
+//-----------------------------------------
+//-----------------------------------------
+
+global proc ocio_log_convert_create_header_image(string $nodeName)
+{
+    //Header
+    image -w 400 -h 100 -image "ocio_maya_aetemplate.png";
+}
+
+
+global proc ocio_log_convert_update_header_image(string $nodeName)
+{}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

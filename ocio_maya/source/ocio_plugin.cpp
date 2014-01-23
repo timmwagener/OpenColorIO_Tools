@@ -18,6 +18,7 @@ Exported functions that maya uses to register the plugin
 #include "ocio_simple_transform.h"
 #include "ocio_colorspace.h"
 #include "ocio_file_transform.h"
+#include "ocio_log_convert.h"
 //Maya
 #include <maya/MFnPlugin.h>
 
@@ -42,6 +43,8 @@ EXPORT MStatus initializePlugin(MObject obj)
 	status = fnPlugin.registerNode(Ocio_colorspace::type_name, Ocio_colorspace::id, Ocio_colorspace::create, Ocio_colorspace::initialize, MPxNode::kDependNode);
 	//OCIOFileTransform
 	status = fnPlugin.registerNode(Ocio_file_transform::type_name, Ocio_file_transform::id, Ocio_file_transform::create, Ocio_file_transform::initialize, MPxNode::kDependNode);
+	//OCIOLogConvert
+	status = fnPlugin.registerNode(Ocio_log_convert::type_name, Ocio_log_convert::id, Ocio_log_convert::create, Ocio_log_convert::initialize, MPxNode::kDependNode);
 
 	return MStatus::kSuccess;
 }
@@ -64,6 +67,8 @@ EXPORT MStatus uninitializePlugin(MObject obj)
 	status = fnPlugin.deregisterNode(Ocio_colorspace::id);
 	//OCIOFileTransform
 	status = fnPlugin.deregisterNode(Ocio_file_transform::id);
+	//OCIOLogConvert
+	status = fnPlugin.deregisterNode(Ocio_log_convert::id);
 	
 
 	return MStatus::kSuccess;

@@ -169,6 +169,77 @@ OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor(OCIO::ConstConfigRcP
 	return processor;
 };
 
+//get_processor
+OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor(int env_or_file,
+															std::string& config_file_path,
+															int operation)
+{
+	//config
+	OCIO::ConstConfigRcPtr config;
+	//processor
+	OCIO::ConstProcessorRcPtr processor;
+	
+
+	//Config
+	//-----------------------------------------------
+
+	try
+	{
+		//assign config based on env_or_file
+		if (env_or_file == 0)
+			config = get_config_from_env();
+		else
+			config = get_config_from_file(config_file_path);
+	}
+	catch (OCIO::Exception &e)
+	{
+		//log
+		std::cout << "Error creating config for processor. Returning 0\n" << e.what() << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+	//config exists
+	if (!config)
+	{
+		//log
+		std::cout << "Config for processor empty. Returning 0" << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	};
+	
+
+	
+	//Processor
+	//-----------------------------------------------
+
+	try
+	{
+		//assign processor based on operation
+		if (operation == 0) //Log to Lin
+			processor = config->getProcessor(OCIO::ROLE_COMPOSITING_LOG, OCIO::ROLE_SCENE_LINEAR);
+		else //Lin to LOg
+			processor = config->getProcessor(OCIO::ROLE_SCENE_LINEAR, OCIO::ROLE_COMPOSITING_LOG);
+	}
+	catch (OCIO::Exception &e)
+	{
+		//log
+		std::cout << "Error creating processor. Returning 0\n" << e.what() << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+
+	return processor;
+
+};
+
 //get_processor_from_file_transform
 OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor_from_file_transform(std::string lut_file_path,
 																				std::string cccid,

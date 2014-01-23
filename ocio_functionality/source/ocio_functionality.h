@@ -43,6 +43,7 @@ namespace OCIO_functionality
 	int get_colorspace_count(OCIO::ConstConfigRcPtr&);
 	std::string get_colorspace_name_from_index(OCIO::ConstConfigRcPtr&, int);
 	OCIO::ConstProcessorRcPtr get_processor(OCIO::ConstConfigRcPtr&, std::string&, std::string&);
+	OCIO::ConstProcessorRcPtr get_processor(int, std::string&, int);
 	OCIO::ConstProcessorRcPtr get_processor_from_file_transform(std::string, std::string, int, int);
 	void color_transform_single_pixel(float*&, float*&, float*&, OCIO::ConstProcessorRcPtr&);
 	std::string get_config_info(OCIO::ConstConfigRcPtr&);
