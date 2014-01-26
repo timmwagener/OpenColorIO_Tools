@@ -303,6 +303,108 @@ OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor_from_file_transform(
 
 };
 
+//get_processor_from_cdl_transform
+OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor_from_cdl_transform(float*& sop, 
+																				float saturation, 
+																				int direction)
+{
+	//processor
+	OCIO::ConstProcessorRcPtr processor;
+
+	try
+	{
+		//config
+		OCIO::ConstConfigRcPtr config = OCIO::Config::Create();
+
+		//transform
+		OCIO::CDLTransformRcPtr transform = OCIO::CDLTransform::Create();
+		
+		//set sop
+		transform->setSOP(sop);
+
+		//set sat
+		transform->setSat(saturation);
+		
+		//direction
+		if (!direction) transform->setDirection(OCIO::TRANSFORM_DIR_FORWARD);
+		else transform->setDirection(OCIO::TRANSFORM_DIR_INVERSE);
+
+		//set processor
+		processor = config->getProcessor(transform, OCIO::TRANSFORM_DIR_FORWARD);
+
+
+	}
+	catch (OCIO::Exception &e)
+	{
+		//log
+		std::cout << "Error creating processor. Returning 0\n" << e.what() << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+	//Performance optimization if processor operation has no effect (then dont do it)
+	if (processor->isNoOp())
+	{
+		//log
+		std::cout << "Processor is noOp. Returning 0 to safe performance" << std::endl;
+
+		//set processor
+		processor = 0;
+		return processor;
+	}
+
+	//Return processor
+	return processor;
+
+};
+
+//get_xml_from_cdl_transform
+std::string OCIO_functionality::get_xml_from_cdl_transform(float*& sop,
+															float saturation,
+															int direction)
+{
+	//str_xml
+	std::string str_xml("");
+
+	try
+	{
+		//config
+		OCIO::ConstConfigRcPtr config = OCIO::Config::Create();
+
+		//transform
+		OCIO::CDLTransformRcPtr transform = OCIO::CDLTransform::Create();
+
+		//set sop
+		transform->setSOP(sop);
+
+		//set sat
+		transform->setSat(saturation);
+
+		//direction
+		if (!direction) transform->setDirection(OCIO::TRANSFORM_DIR_FORWARD);
+		else transform->setDirection(OCIO::TRANSFORM_DIR_INVERSE);
+
+		//set str_xml
+		str_xml = std::string(transform->getXML());
+
+
+	}
+	catch (OCIO::Exception &e)
+	{
+		//log
+		std::cout << "Error getting xml from cdl transform. Returning empty string." << e.what() << std::endl;
+
+		//Return str_xml
+		return str_xml;
+	}
+
+	//Return str_xml
+	return str_xml;
+
+};
+
 //color_transform_single_pixel
 void OCIO_functionality::color_transform_single_pixel(float*& r, float*& g, float*& b, OCIO::ConstProcessorRcPtr& processor)
 {

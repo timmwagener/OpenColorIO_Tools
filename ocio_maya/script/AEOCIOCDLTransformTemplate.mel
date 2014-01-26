@@ -1,0 +1,201 @@
+
+//AEOCIOCDLTransformTemplate
+global proc AEOCIOCDLTransformTemplate( string $nodeName ) { 
+    
+    //Vars
+    //-----------------------------------------
+    //-----------------------------------------
+    string $node[];
+	tokenize $nodeName "." $node;
+
+
+	
+
+
+
+	//Header image
+    //-----------------------------------------
+    //-----------------------------------------
+    
+    //create header image
+    editorTemplate -callCustom "ocio_cdl_transform_create_header_image" "ocio_cdl_transform_update_header_image" "Dummy";
+
+
+	
+	
+
+
+
+	
+
+
+    //scroll layout
+    editorTemplate -beginScrollLayout;
+
+    
+
+
+    
+    
+    
+
+
+    
+
+    //Begin Layout Input Color
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "Input Color" -collapse 0;
+
+    //input_color
+    editorTemplate -addControl "input_color";
+
+    //End Layout Input Color
+    editorTemplate -endLayout;
+    
+
+   
+
+
+
+    //Begin Layout OCIO
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -beginLayout "OCIO" -collapse 0;
+
+    //verbose
+    //editorTemplate -addControl "verbose";
+
+    //Separator
+    //editorTemplate -addSeparator;
+
+    
+
+
+
+
+    //slope
+    editorTemplate -addControl "slope";
+
+    //offset
+    editorTemplate -addControl "offset";
+
+    //power
+    editorTemplate -addControl "power";
+
+    //saturation
+    editorTemplate -addControl "saturation";
+    
+
+
+    //Separator
+    editorTemplate -addSeparator;
+
+    //direction
+    editorTemplate -addControl "direction";
+
+
+
+    //Separator
+    editorTemplate -addSeparator;
+
+    //export grade
+    editorTemplate -callCustom "ocio_cdl_transform_export_cc_build" "ocio_cdl_transform_export_cc_update" "export_cc_dummy";
+
+
+    //End Layout OCIO
+    editorTemplate -endLayout;
+
+
+
+
+
+    
+    
+    
+
+
+    //Extra controls for unspecified attributes
+    //-----------------------------------------
+    //-----------------------------------------
+    editorTemplate -addExtraControls; 
+    
+    //end scroll layout
+    editorTemplate -endScrollLayout;
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+//Header image procedures
+//-----------------------------------------
+//-----------------------------------------
+
+global proc ocio_cdl_transform_create_header_image(string $nodeName)
+{
+    //Header
+    image -w 400 -h 100 -image "ocio_maya_aetemplate.png";
+}
+
+
+global proc ocio_cdl_transform_update_header_image(string $nodeName)
+{}
+
+
+
+
+
+//Export cc procedures
+//-----------------------------------------
+//-----------------------------------------
+
+global proc ocio_cdl_transform_export_cc_build(string $nodeName)
+{
+    //node_name
+    string $node[];
+    tokenize $nodeName "." $node;
+    string $node_name = $node[0];
+
+
+    //btn_export
+    button -label "Export grade as .cc" -c ("ocio_cdl_transform_export_cc(\"" + $node_name + "\")") btn_export;
+
+}
+
+
+global proc ocio_cdl_transform_export_cc_update(string $nodeName)
+{
+    //node_name
+    string $node[];
+    tokenize $nodeName "." $node;
+    string $node_name = $node[0];
+
+
+    //btn_export
+    button -e -label "Export grade as .cc" -c ("ocio_cdl_transform_export_cc(\"" + $node_name + "\")") btn_export;
+}
+
+
+global proc ocio_cdl_transform_export_cc(string $node_name)
+{
+    ocio_export_cc -sn $node_name;
+}
+
+
+
+
+
+
+
+

@@ -45,6 +45,8 @@ namespace OCIO_functionality
 	OCIO::ConstProcessorRcPtr get_processor(OCIO::ConstConfigRcPtr&, std::string&, std::string&);
 	OCIO::ConstProcessorRcPtr get_processor(int, std::string&, int);
 	OCIO::ConstProcessorRcPtr get_processor_from_file_transform(std::string, std::string, int, int);
+	OCIO::ConstProcessorRcPtr get_processor_from_cdl_transform(float*&, float, int);
+	std::string get_xml_from_cdl_transform(float*&, float, int);
 	void color_transform_single_pixel(float*&, float*&, float*&, OCIO::ConstProcessorRcPtr&);
 	std::string get_config_info(OCIO::ConstConfigRcPtr&);
 	//Temp
