@@ -26,7 +26,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON) #<-- Include current directory
 
 #QT
 #---------------------------------------
-set(CUSTOM_QT_DIR "C:/symlinks/libraries/Qt/x64/msvc11/Qt/Qt5.2.0/5.2.0/msvc2012_64_opengl")
+set(CUSTOM_QT_DIR "C:/symlinks/libraries/Qt/x64/msvc11/Qt/Qt5.2.1/5.2.1/msvc2012_64_opengl")
 set(CMAKE_AUTOMOC ON) #<-- Auto meta object compilation for Q_Object macro
 set(OPENGL_INCLUDE_PATH "C:/symlinks/microsoft_sdks/Windows/v7.0A/Lib")
 set(CMAKE_PREFIX_PATH ${CUSTOM_QT_DIR}; ${OPENGL_INCLUDE_PATH})

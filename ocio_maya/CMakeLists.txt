@@ -25,7 +25,7 @@ endif()
 
 #CMAKE Variables
 #maya
-set(MAYA_DIR "C:/symlinks/maya/maya2012x64" CACHE PATH "Path to Maya install. For example: C:/Program Files/Autodesk/Maya2012")
+set(MAYA_DIR "C:/symlinks/maya/maya2014x64" CACHE PATH "Path to Maya install. For example: C:/Program Files/Autodesk/Maya2014")
 #ocio
 set(OCIO_INCLUDE_DIR "C:/symlinks/libraries/OpenColorIO/build_harness/OpenColorIO/export" CACHE PATH "OCIO default include path. Must contain the files: OpenColorIO.h, OpenColorTransforms.h and OpenColorTypes.h")
 set(OCIO_ABI_INCLUDE_DIR "C:/symlinks/libraries/OpenColorIO/build_harness/OpenColorIO_build/msvc10/x64/export" CACHE PATH "OCIO ABI header include path. This header is built by cmake and therefore can be found in the build directory. Must contain the file: OpenColorABI.h")
@@ -34,7 +34,7 @@ set(OCIO_LIBRARY_DIR_RELEASE "C:/symlinks/libraries/OpenColorIO/x64/msvc10/stati
 #boost
 set(BOOST_ROOT "C:/symlinks/boost/boost_1_54_0" CACHE PATH "Boost Root, for example: C:/boost_1_54_0")
 set(BOOST_INCLUDEDIR "C:/symlinks/boost/boost_1_54_0/boost" CACHE PATH "Boost include dir, for example: C:/boost_1_54_0/boost")
-set(BOOST_LIBRARYDIR "C:/symlinks/boost/boost_1_54_0/stage/x64/msvc10/python26/lib" CACHE PATH "Boost library dir, for example: C:/boost_1_54_0/stage/x64/msvc10/python27/lib")
+set(BOOST_LIBRARYDIR "C:/symlinks/boost/boost_1_54_0/stage/x64/msvc10/python26/lib" CACHE PATH "Boost library dir, for example: C:/boost_1_54_0/stage/x64/msvc10/python26/lib")
 #custom
 set(ADDITIONAL_SOURCE_DIR_1 "C:/symlinks/paper_sketch/OpenColorIO_tools/ocio_functionality/source" CACHE PATH "Additional include directories. Will be scanned for .h and .cpp files")
 set(ADDITIONAL_SOURCE_DIR_2 "" CACHE PATH "Additional include directories. Will be scanned for .h and .cpp files")
