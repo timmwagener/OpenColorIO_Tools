@@ -30,7 +30,7 @@
 
 //prm_cop_default
 //Macro expanding to default COP2 tabs for Mask and Frame Scope
-COP_MASK_SWITCHER(9, "OCIO Colorspace");
+COP_MASK_SWITCHER(9, "OCIOColorspace");
 PRM_Template prm_cop_default = PRM_Template(PRM_SWITCHER, 3, &PRMswitcherName, switcher);
 
 //prm_env_or_file

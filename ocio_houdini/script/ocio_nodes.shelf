@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+
+
+<tool name="OCIOColorspace" label="OCIOColorspace" icon="COP2_OCIOColorspace">
+
+<helpURL>operator:Cop2/OCIOColorspace</helpURL>
+
+<toolMenuContext name="pop_viewer">
+<contextNetType>COP2</contextNetType>
+</toolMenuContext>
+<toolMenuContext name="cop_viewer">
+<contextNetType>COP2</contextNetType>
+</toolMenuContext>
+<toolMenuContext name="network">
+<contextOpType>Cop2/OCIOColorspace</contextOpType>
+</toolMenuContext>
+
+<toolSubmenu>OpenColorIO</toolSubmenu>
+
+<script scriptType="python"><![CDATA[import cop2toolutils
+
+cop2toolutils.genericTool(kwargs, 'OCIOColorspace')]]></script>
+
+</tool>
+
+</shelfDocument>

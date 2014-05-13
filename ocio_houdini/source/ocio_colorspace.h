@@ -43,6 +43,7 @@ It is not multithreaded as i expect OCIO doing smart threading on the whole arra
 #include <COP2/COP2_MaskOp.h>
 //Own
 #include "ocio_functionality.h"
+#include "ocio_types.h"
 
 
 
@@ -55,14 +56,7 @@ namespace OCIO = OCIO_NAMESPACE;
 
 
 
-//Colorspace_in_or_out
-//-----------------------------------------------
 
-enum Colorspace_in_or_out
-{
-	INPUT_COLORSPACE,
-	OUTPUT_COLORSPACE
-};
 
 
 

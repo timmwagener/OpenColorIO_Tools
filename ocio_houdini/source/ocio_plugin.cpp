@@ -33,7 +33,7 @@ void newCop2Operator(OP_OperatorTable *table)
 {
 	
 	//Ocio_image_filter
-	table->addOperator(new OP_Operator("ocio_colorspace",
+	table->addOperator(new OP_Operator("OCIOColorspace",
 		"OCIOColorspace",
 		Ocio_colorspace::ocio_colorspace_factory,
 		&Ocio_colorspace::template_pair,
