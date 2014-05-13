@@ -414,6 +414,16 @@ void OCIO_functionality::color_transform_single_pixel(float*& r, float*& g, floa
 	processor->apply(planar_image);
 };
 
+//color_transform_rgb_array
+void OCIO_functionality::color_transform_rgb_array(float*& r, float*& g, float*& b,
+	OCIO::ConstProcessorRcPtr& processor, int width, int height)
+{
+	//planar_image
+	OCIO::PlanarImageDesc planar_image(r, g, b, NULL, width, height);
+	//apply transform
+	processor->apply(planar_image);
+};
+
 //get_config_info
 std::string OCIO_functionality::get_config_info(OCIO::ConstConfigRcPtr& config)
 {
