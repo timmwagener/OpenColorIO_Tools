@@ -2,7 +2,7 @@
 <shelfDocument>
 
 
-<tool name="OCIOColorspace" label="OCIOColorspace" icon="COP2_OCIOColorspace">
+<tool name="cop2_OCIOColorspace" label="OCIOColorspace" icon="COP2_OCIOColorspace">
 
 <helpURL>operator:Cop2/OCIOColorspace</helpURL>
 
