@@ -28,71 +28,76 @@
 //-----------------------------------------------
 //-----------------------------------------------
 
-//prm_cop_default
-//Macro expanding to default COP2 tabs for Mask and Frame Scope
-COP_MASK_SWITCHER(9, "OCIOColorspace");
-PRM_Template prm_cop_default = PRM_Template(PRM_SWITCHER, 3, &PRMswitcherName, switcher);
+namespace ocio_colorspace_parameters
+{
 
-//prm_env_or_file
-static PRM_Name prm_env_or_file_name("env_or_file", "Load OCIO from file");
-static PRM_Default prm_env_or_file_default(0);
-const char* prm_env_or_file_help_text = "When unchecked the OCIO file will be aquired from the environment variable.\
-										\nIf checked it will be aquired from the file path given below.";
-PRM_Template prm_env_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_env_or_file_name, 
-											&prm_env_or_file_default, 0, 0, 0, 0, 0, 
-											prm_env_or_file_help_text, 0);
+	//prm_cop_default
+	//Macro expanding to default COP2 tabs for Mask and Frame Scope
+	COP_MASK_SWITCHER(9, "OCIOColorspace");
+	PRM_Template prm_cop_default = PRM_Template(PRM_SWITCHER, 3, &PRMswitcherName, switcher);
 
-//prm_last_env_or_file
-static PRM_Name prm_last_env_or_file_name("last_env_or_file", "last_env_or_file");
-static PRM_Default prm_last_env_or_file_default(0);
-PRM_Template prm_last_env_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_last_env_or_file_name,
-	&prm_last_env_or_file_default, 0, 0, 0, 0, 0);
+	//prm_env_or_file
+	static PRM_Name prm_env_or_file_name("env_or_file", "Load OCIO from file");
+	static PRM_Default prm_env_or_file_default(0);
+	const char* prm_env_or_file_help_text = "When unchecked the OCIO file will be aquired from the environment variable.\
+																					\nIf checked it will be aquired from the file path given below.";
+	PRM_Template prm_env_or_file = PRM_Template(PRM_TOGGLE, TOOL_PARM, 1, &prm_env_or_file_name,
+		&prm_env_or_file_default, 0, 0, 0, 0, 0,
+		prm_env_or_file_help_text, 0);
 
-//prm_config_file_path
-static PRM_Name prm_config_file_path_name("config_file_path", "config_file_path");
-PRM_Template prm_config_file_path = PRM_Template(PRM_FILE, 1, &prm_config_file_path_name);
+	//prm_last_env_or_file
+	static PRM_Name prm_last_env_or_file_name("last_env_or_file", "last_env_or_file");
+	static PRM_Default prm_last_env_or_file_default(0);
+	PRM_Template prm_last_env_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_last_env_or_file_name,
+		&prm_last_env_or_file_default, 0, 0, 0, 0, 0);
 
-//prm_last_config_file_path
-static PRM_Name prm_last_config_file_path_name("last_config_file_path", "last_config_file_path");
-PRM_Template prm_last_config_file_path = PRM_Template(PRM_STRING, 1, &prm_last_config_file_path_name);
+	//prm_config_file_path
+	static PRM_Name prm_config_file_path_name("config_file_path", "config_file_path");
+	PRM_Template prm_config_file_path = PRM_Template(PRM_FILE, 1, &prm_config_file_path_name);
 
-//prm_input_colorspace
-static PRM_Name prm_input_colorspace_name("input_colorspace", "input_colorspace");
-static PRM_Default prm_input_colorspace_default(0);
-static PRM_ChoiceList prm_input_colorspace_choice_list(PRM_CHOICELIST_SINGLE, 
-	&Ocio_colorspace::update_colorspace_menu);
-PRM_Template prm_input_colorspace = PRM_Template(PRM_ORD, TOOL_PARM, 1, &prm_input_colorspace_name, &prm_input_colorspace_default,
-	&prm_input_colorspace_choice_list);
+	//prm_last_config_file_path
+	static PRM_Name prm_last_config_file_path_name("last_config_file_path", "last_config_file_path");
+	PRM_Template prm_last_config_file_path = PRM_Template(PRM_STRING, 1, &prm_last_config_file_path_name);
+
+	//prm_input_colorspace
+	static PRM_Name prm_input_colorspace_name("input_colorspace", "input_colorspace");
+	static PRM_Default prm_input_colorspace_default(0);
+	static PRM_ChoiceList prm_input_colorspace_choice_list(PRM_CHOICELIST_SINGLE,
+		&Ocio_colorspace::update_colorspace_menu);
+	PRM_Template prm_input_colorspace = PRM_Template(PRM_ORD, TOOL_PARM, 1, &prm_input_colorspace_name, &prm_input_colorspace_default,
+		&prm_input_colorspace_choice_list);
 
 
 
-//prm_internal_input_colorspace_index
-static PRM_Name prm_internal_input_colorspace_index_name("internal_input_colorspace_index", "internal_input_colorspace_index");
-static PRM_Default prm_internal_input_colorspace_index_default(0);
-PRM_Template prm_internal_input_colorspace_index = PRM_Template(PRM_ORD, 1,
-																&prm_internal_input_colorspace_index_name,
-																&prm_internal_input_colorspace_index_default);
+	//prm_internal_input_colorspace_index
+	static PRM_Name prm_internal_input_colorspace_index_name("internal_input_colorspace_index", "internal_input_colorspace_index");
+	static PRM_Default prm_internal_input_colorspace_index_default(0);
+	PRM_Template prm_internal_input_colorspace_index = PRM_Template(PRM_ORD, 1,
+		&prm_internal_input_colorspace_index_name,
+		&prm_internal_input_colorspace_index_default);
 
-//prm_output_colorspace
-static PRM_Name prm_output_colorspace_name("output_colorspace", "output_colorspace");
-static PRM_Default prm_output_colorspace_default(0);
-static PRM_ChoiceList prm_output_colorspace_choice_list(PRM_CHOICELIST_SINGLE,
-	&Ocio_colorspace::update_colorspace_menu);
-PRM_Template prm_output_colorspace = PRM_Template(PRM_ORD, TOOL_PARM, 1, &prm_output_colorspace_name, &prm_output_colorspace_default,
-	&prm_output_colorspace_choice_list);
+	//prm_output_colorspace
+	static PRM_Name prm_output_colorspace_name("output_colorspace", "output_colorspace");
+	static PRM_Default prm_output_colorspace_default(0);
+	static PRM_ChoiceList prm_output_colorspace_choice_list(PRM_CHOICELIST_SINGLE,
+		&Ocio_colorspace::update_colorspace_menu);
+	PRM_Template prm_output_colorspace = PRM_Template(PRM_ORD, TOOL_PARM, 1, &prm_output_colorspace_name, &prm_output_colorspace_default,
+		&prm_output_colorspace_choice_list);
 
-//prm_internal_output_colorspace_index
-static PRM_Name prm_internal_output_colorspace_index_name("internal_output_colorspace_index", "internal_output_colorspace_index");
-static PRM_Default prm_internal_output_colorspace_index_default(0);
-PRM_Template prm_internal_output_colorspace_index = PRM_Template(PRM_ORD, 1, 
-																&prm_internal_output_colorspace_index_name,
-																&prm_internal_output_colorspace_index_default);
+	//prm_internal_output_colorspace_index
+	static PRM_Name prm_internal_output_colorspace_index_name("internal_output_colorspace_index", "internal_output_colorspace_index");
+	static PRM_Default prm_internal_output_colorspace_index_default(0);
+	PRM_Template prm_internal_output_colorspace_index = PRM_Template(PRM_ORD, 1,
+		&prm_internal_output_colorspace_index_name,
+		&prm_internal_output_colorspace_index_default);
 
-//prm_config_info
-static PRM_Name prm_config_info_name("config_info", "config_info");
-PRM_Template prm_config_info = PRM_Template(PRM_STRING, 
-											1, &prm_config_info_name, 
-											0, 0, 0, 0, &PRM_SpareData::stringEditor);
+	//prm_config_info
+	static PRM_Name prm_config_info_name("config_info", "config_info");
+	PRM_Template prm_config_info = PRM_Template(PRM_STRING,
+		1, &prm_config_info_name,
+		0, 0, 0, 0, &PRM_SpareData::stringEditor);
+
+};
 
 
 
@@ -100,16 +105,16 @@ PRM_Template prm_config_info = PRM_Template(PRM_STRING,
 //-----------------------------------------------
 PRM_Template Ocio_colorspace::template_list[] =
 {
-	prm_cop_default, 
-	prm_env_or_file,
-	prm_last_env_or_file,
-	prm_config_file_path,
-	prm_last_config_file_path,
-	prm_input_colorspace,
-	prm_internal_input_colorspace_index,
-	prm_output_colorspace,
-	prm_internal_output_colorspace_index,
-	prm_config_info,
+	ocio_colorspace_parameters::prm_cop_default,
+	ocio_colorspace_parameters::prm_env_or_file,
+	ocio_colorspace_parameters::prm_last_env_or_file,
+	ocio_colorspace_parameters::prm_config_file_path,
+	ocio_colorspace_parameters::prm_last_config_file_path,
+	ocio_colorspace_parameters::prm_input_colorspace,
+	ocio_colorspace_parameters::prm_internal_input_colorspace_index,
+	ocio_colorspace_parameters::prm_output_colorspace,
+	ocio_colorspace_parameters::prm_internal_output_colorspace_index,
+	ocio_colorspace_parameters::prm_config_info,
 	//Sentinel (needed)
 	PRM_Template()
 };
@@ -205,10 +210,10 @@ bool Ocio_colorspace::updateParmsFlags()
 	bool attribute_change_occured = COP2_MaskOp::updateParmsFlags();
 	
 	//Set attrs. invisible
-	attribute_change_occured |= setVisibleState(prm_last_env_or_file.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(prm_last_config_file_path.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(prm_internal_input_colorspace_index.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(prm_internal_output_colorspace_index.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_env_or_file.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_config_file_path.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_input_colorspace_index.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), internal_parms_visible);
 
 	return attribute_change_occured;
 }
@@ -581,8 +586,8 @@ void Ocio_colorspace::update_colorspace_menu(void* data,
 void Ocio_colorspace::force_refresh_colorspace_menu()
 {
 	//update_ui
-	getParm(prm_input_colorspace_name.getToken()).valueChanged(0, true);
-	getParm(prm_output_colorspace_name.getToken()).valueChanged(0, true);
+	getParm(ocio_colorspace_parameters::prm_input_colorspace_name.getToken()).valueChanged(0, true);
+	getParm(ocio_colorspace_parameters::prm_output_colorspace_name.getToken()).valueChanged(0, true);
 };
 
 //newContextData
@@ -666,7 +671,7 @@ float Ocio_colorspace::get_time()
 bool Ocio_colorspace::get_env_or_file(float time)
 {
 	//env_or_file
-	bool env_or_file = evalInt(prm_env_or_file.getToken(), 0, time);
+	bool env_or_file = evalInt(ocio_colorspace_parameters::prm_env_or_file.getToken(), 0, time);
 
 	return env_or_file;
 };
@@ -675,14 +680,14 @@ bool Ocio_colorspace::get_env_or_file(float time)
 void Ocio_colorspace::set_last_env_or_file(int new_value, float time)
 {
 	//setInt
-	setInt(prm_last_env_or_file.getToken(), 0, time, new_value);
+	setInt(ocio_colorspace_parameters::prm_last_env_or_file.getToken(), 0, time, new_value);
 };
 
 //get_last_env_or_file
 bool Ocio_colorspace::get_last_env_or_file(float time)
 {
 	//last_env_or_file
-	bool last_env_or_file = evalInt(prm_last_env_or_file.getToken(), 0, time);
+	bool last_env_or_file = evalInt(ocio_colorspace_parameters::prm_last_env_or_file.getToken(), 0, time);
 
 	return last_env_or_file;
 };
@@ -694,7 +699,7 @@ std::string Ocio_colorspace::get_config_file_path(float time)
 	UT_String ut_config_file_path;
 	
 	//aquire ut_config_file_path
-	evalString(ut_config_file_path, prm_config_file_path.getToken(), 0, time);
+	evalString(ut_config_file_path, ocio_colorspace_parameters::prm_config_file_path.getToken(), 0, time);
 
 	//config_file_path
 	std::string config_file_path = ut_config_file_path.toStdString();
@@ -709,7 +714,7 @@ void Ocio_colorspace::set_last_config_file_path(std::string new_value, float tim
 	UT_String ut_new_value(new_value);
 	
 	//aquire ut_last_config_file_path
-	setString(ut_new_value, CH_STRING_LITERAL, prm_last_config_file_path.getToken(), 0, time);
+	setString(ut_new_value, CH_STRING_LITERAL, ocio_colorspace_parameters::prm_last_config_file_path.getToken(), 0, time);
 };
 
 //get_last_config_file_path
@@ -719,7 +724,7 @@ std::string Ocio_colorspace::get_last_config_file_path(float time)
 	UT_String ut_last_config_file_path;
 
 	//aquire ut_last_config_file_path
-	evalString(ut_last_config_file_path, prm_last_config_file_path.getToken(), 0, time);
+	evalString(ut_last_config_file_path, ocio_colorspace_parameters::prm_last_config_file_path.getToken(), 0, time);
 
 	//last_config_file_path
 	std::string last_config_file_path = ut_last_config_file_path.toStdString();
@@ -740,10 +745,10 @@ std::string Ocio_colorspace::get_colorspace(Colorspace_in_or_out colorspace_in_o
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
-		evalString(ut_colorspace_name, prm_output_colorspace_name.getToken(), 0, current_time);
+		evalString(ut_colorspace_name, ocio_colorspace_parameters::prm_output_colorspace_name.getToken(), 0, current_time);
 	//INPUT_COLORSPACE
 	else
-		evalString(ut_colorspace_name, prm_input_colorspace_name.getToken(), 0, current_time);
+		evalString(ut_colorspace_name, ocio_colorspace_parameters::prm_input_colorspace_name.getToken(), 0, current_time);
 
 	//colorspace_name
 	std::string colorspace_name = ut_colorspace_name.toStdString();
@@ -766,10 +771,10 @@ int Ocio_colorspace::get_colorspace_index(Colorspace_in_or_out colorspace_in_or_
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
-		colorspace_index = evalInt(prm_output_colorspace_name.getToken(), 0, current_time);
+		colorspace_index = evalInt(ocio_colorspace_parameters::prm_output_colorspace_name.getToken(), 0, current_time);
 	//INPUT_COLORSPACE
 	else
-		colorspace_index = evalInt(prm_input_colorspace_name.getToken(), 0, current_time);
+		colorspace_index = evalInt(ocio_colorspace_parameters::prm_input_colorspace_name.getToken(), 0, current_time);
 
 	//return
 	return colorspace_index;
@@ -784,10 +789,10 @@ void Ocio_colorspace::set_colorspace_by_index(int new_colorspace_index,
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
-		setInt(prm_output_colorspace.getToken(), 0, current_time, new_colorspace_index);
+		setInt(ocio_colorspace_parameters::prm_output_colorspace.getToken(), 0, current_time, new_colorspace_index);
 	//INPUT_COLORSPACE
 	else
-		setInt(prm_input_colorspace.getToken(), 0, current_time, new_colorspace_index);
+		setInt(ocio_colorspace_parameters::prm_input_colorspace.getToken(), 0, current_time, new_colorspace_index);
 
 	
 
@@ -807,10 +812,10 @@ int Ocio_colorspace::get_internal_colorspace_index(Colorspace_in_or_out colorspa
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
-		internal_colorspace_index = evalInt(prm_internal_output_colorspace_index.getToken(), 0, current_time);
+		internal_colorspace_index = evalInt(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), 0, current_time);
 	//INPUT_COLORSPACE
 	else
-		internal_colorspace_index = evalInt(prm_internal_input_colorspace_index.getToken(), 0, current_time);
+		internal_colorspace_index = evalInt(ocio_colorspace_parameters::prm_internal_input_colorspace_index.getToken(), 0, current_time);
 
 	
 
@@ -827,10 +832,10 @@ void Ocio_colorspace::set_internal_colorspace_index(int new_internal_colorspace_
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
-		setInt(prm_internal_output_colorspace_index.getToken(), 0, current_time, new_internal_colorspace_index);
+		setInt(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), 0, current_time, new_internal_colorspace_index);
 	//INPUT_COLORSPACE
 	else
-		setInt(prm_internal_input_colorspace_index.getToken(), 0, current_time, new_internal_colorspace_index);
+		setInt(ocio_colorspace_parameters::prm_internal_input_colorspace_index.getToken(), 0, current_time, new_internal_colorspace_index);
 };
 
 //set_config_info
@@ -849,5 +854,5 @@ void Ocio_colorspace::set_config_info()
 	UT_String ut_config_info(std_config_info);
 
 	//set config info
-	setString(ut_config_info, CH_STRING_LITERAL, prm_config_info.getToken(), 0, current_time);
+	setString(ut_config_info, CH_STRING_LITERAL, ocio_colorspace_parameters::prm_config_info.getToken(), 0, current_time);
 };

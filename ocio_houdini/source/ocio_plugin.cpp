@@ -19,6 +19,7 @@
 #include <OP/OP_OperatorTable.h>
 //Own
 #include "ocio_colorspace.h"
+#include "ocio_log_convert.h"
 
 
 
@@ -32,7 +33,7 @@
 void newCop2Operator(OP_OperatorTable *table)
 {
 	
-	//Ocio_image_filter
+	//OCIOColorspace
 	table->addOperator(new OP_Operator("OCIOColorspace",
 		"OCIOColorspace",
 		Ocio_colorspace::ocio_colorspace_factory,
@@ -42,5 +43,16 @@ void newCop2Operator(OP_OperatorTable *table)
 		&Ocio_colorspace::variable_pair,
 		0, // not generator
 		Ocio_colorspace::input_labels_list));
+
+	//OCIOLogConvert
+	table->addOperator(new OP_Operator("OCIOLogConvert",
+		"OCIOLogConvert",
+		Ocio_log_convert::ocio_log_convert_factory,
+		&Ocio_log_convert::template_pair,
+		1,
+		2, // optional mask input.
+		&Ocio_log_convert::variable_pair,
+		0, // not generator
+		Ocio_log_convert::input_labels_list));
 			
 };
