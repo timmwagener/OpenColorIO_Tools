@@ -80,6 +80,7 @@ public:
 	static const char* input_labels_list[];
 	//OCIO
 	//-----------------------------------------------
+	OCIO::ConstConfigRcPtr config;
 	OCIO::ConstProcessorRcPtr processor;
 	//Misc
 	//-----------------------------------------------
@@ -132,6 +133,8 @@ public:
 	
 	//OCIO
 	//-----------------------------------------------
+	void set_config(int env_or_file = 0);
+	bool config_exists();
 	void set_processor(int, std::string, int);
 	bool processor_exists();
 	//Misc

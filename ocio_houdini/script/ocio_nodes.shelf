@@ -24,4 +24,27 @@ cop2toolutils.genericTool(kwargs, 'OCIOColorspace')]]></script>
 
 </tool>
 
+
+<tool name="cop2_OCIOLogConvert" label="OCIOLogConvert" icon="COP2_OCIOColorspace">
+
+<helpURL>operator:Cop2/OCIOLogConvert</helpURL>
+
+<toolMenuContext name="pop_viewer">
+<contextNetType>COP2</contextNetType>
+</toolMenuContext>
+<toolMenuContext name="cop_viewer">
+<contextNetType>COP2</contextNetType>
+</toolMenuContext>
+<toolMenuContext name="network">
+<contextOpType>Cop2/OCIOLogConvert</contextOpType>
+</toolMenuContext>
+
+<toolSubmenu>OpenColorIO</toolSubmenu>
+
+<script scriptType="python"><![CDATA[import cop2toolutils
+
+cop2toolutils.genericTool(kwargs, 'OCIOLogConvert')]]></script>
+
+</tool>
+
 </shelfDocument>

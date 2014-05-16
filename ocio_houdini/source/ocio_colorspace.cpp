@@ -170,8 +170,8 @@ Ocio_colorspace::Ocio_colorspace(OP_Network* parent,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
-									log_messages(false),
-									internal_parms_visible(false)
+									log_messages(true),
+									internal_parms_visible(true)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);

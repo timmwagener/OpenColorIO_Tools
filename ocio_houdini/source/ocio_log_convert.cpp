@@ -291,6 +291,36 @@ OP_ERROR Ocio_log_convert::filter(COP2_Context& context,
 //-----------------------------------------------
 //-----------------------------------------------
 
+//set_config
+void Ocio_log_convert::set_config(int env_or_file)
+{
+	//log
+	log("set_config");
+
+	//env
+	if (env_or_file == 0)
+		config = OCIO_functionality::get_config_from_env();
+	//file
+	else
+	{
+		//time
+		float time = get_time();
+		//config_file_path
+		std::string config_file_path(get_config_file_path(time));
+		//config
+		config = OCIO_functionality::get_config_from_file(config_file_path); //insert filepath here
+	};
+
+};
+
+//config_exists
+bool Ocio_log_convert::config_exists()
+{
+	//return wether or not config exists
+	if (!config)
+		return false;
+	return true;
+};
 
 //set_processor
 void Ocio_log_convert::set_processor(int env_or_file, std::string config_file_path, int operation)
@@ -396,33 +426,48 @@ COP2_ContextData* Ocio_log_convert::newContextData(const TIL_Plane* plane,
 	//first_execution
 	if (first_execution)
 	{
+		//set_processor
 		set_processor(env_or_file, config_file_path, operation);
+		//first_execution false
 		first_execution = false;
+		//set_config_info
+		set_config_info();
 	}
 	//env_or_file
 	else if (env_or_file != last_env_or_file)
+	{
+		//set_processor
 		set_processor(env_or_file, config_file_path, operation);
+		//last_env_or_file
+		set_last_env_or_file(env_or_file, time);
+		//set_config_info
+		set_config_info();
+	}
 	//config_file_path
 	else if (config_file_path.compare(last_config_file_path) != 0)
-		set_processor(env_or_file, config_file_path, operation);
+	{
+		//if ocio from file
+		if (env_or_file)
+		{
+			//set_processor
+			set_processor(env_or_file, config_file_path, operation);
+			//set_config_info
+			set_config_info();
+		};
+		//last_config_file_path
+		set_last_config_file_path(config_file_path, time);
+	}
 	//operation
 	else if (operation != internal_operation_index)
+	{
+		//set_processor
 		set_processor(env_or_file, config_file_path, operation);
+		//internal_operation_index
+		set_internal_operation_index(operation, time);
+	};
 
-
-
-
-
-
-	//Set attrs in UI
-	//-----------------------------------------------
-
-	//last_env_or_file
-	set_last_env_or_file(env_or_file, time);
-	//last_config_file_path
-	set_last_config_file_path(config_file_path, time);
-	//internal_operation_index
-	set_internal_operation_index(operation, time);
+	
+	
 	
 	
 	
@@ -442,6 +487,10 @@ COP2_ContextData* Ocio_log_convert::newContextData(const TIL_Plane* plane,
 
 	//component_count
 	context_data->component_count = plane->getVectorSize();
+
+
+
+
 	
 	//return
 	return context_data;
@@ -574,22 +623,21 @@ void Ocio_log_convert::set_internal_operation_index(int new_internal_operation_i
 //set_config_info
 void Ocio_log_convert::set_config_info()
 {
+	//current_time
+	fpreal time = get_time();
+	
+	//set_config
+	set_config(get_env_or_file(time));
+	
+	//std_config_info
+	std::string std_config_info;
 
-	////config
-	//OCIO::ConstConfigRcPtr config = OCIO_functionality::get_config_from_env();
+	//assign config info
+	std_config_info = OCIO_functionality::get_config_info(config);
 
-	////std_config_info
-	//std::string std_config_info;
+	//ut_config_info
+	UT_String ut_config_info(std_config_info);
 
-	////assign config info
-	//std_config_info = OCIO_functionality::get_config_info(config);
-
-	////current_time
-	//fpreal current_time = get_time();
-
-	////ut_config_info
-	//UT_String ut_config_info(std_config_info);
-
-	////set config info
-	//setString(ut_config_info, CH_STRING_LITERAL, prm_config_info.getToken(), 0, current_time);
+	//set config info
+	setString(ut_config_info, CH_STRING_LITERAL, ocio_log_convert_parameters::prm_config_info.getToken(), 0, time);
 };

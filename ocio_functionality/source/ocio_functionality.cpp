@@ -86,7 +86,8 @@ OCIO::ConstConfigRcPtr OCIO_functionality::get_config_from_file(std::string& fil
 	catch (OCIO::Exception& exception)
 	{
 		std::cerr << "OpenColorIO Error: " << exception.what() << "\nReturning empty config." << std::endl;
-		return 0;
+		config = 0;
+		return config;
 	}
 
 	return config;
