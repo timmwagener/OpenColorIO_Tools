@@ -25,14 +25,13 @@ Nuke OCIO nodes for Houdini
 
 The list of nodes i want to make available as Houdini COP2 nodes
 
-* OCIOCDLTransform
+* **OCIOCDLTransform**
 	Applies an ASC CDL (American Society of Cinematographers Color Decision List) grade based on the OpenColorIO Library
-* OCIOColorSpace
-	Apply a color transformation based on a .ocio file. Ocio files are yaml based and describe the complete available colorenvironment. The color environment in turn usualy consists of a dozen Lut files which describe transformations to/from the
-reference color space to the target space.
-* OCIOFileTransform
+* **OCIOColorSpace**
+	Apply a color transformation based on a .ocio file. Ocio files are yaml based and describe the complete available colorenvironment. The color environment in turn usualy consists of a dozen Lut files which describe transformations to/from the reference color space to the target space.
+* **OCIOFileTransform**
 	Accepts a path to a specific color lut file and does a color transformation based on it.
-* OCIOLogConvert
+* **OCIOLogConvert**
 	Do a color transformation from Lin to Log, or the other way round, based on the Lin and Log roles of the given .ocio config file.
 
 
