@@ -220,6 +220,10 @@ OP_ERROR Ocio_log_convert::filter(COP2_Context& context,
 	TIL_Region* output)
 {
 
+	//log
+	log("execute filter");
+
+
 	//Pixel operation to perform is implemented here
 
 	//context_data
