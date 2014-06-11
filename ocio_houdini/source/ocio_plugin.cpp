@@ -21,6 +21,7 @@
 #include "ocio_colorspace.h"
 #include "ocio_log_convert.h"
 #include "ocio_file_transform.h"
+#include "ocio_cdl_transform.h"
 
 
 
@@ -65,5 +66,16 @@ void newCop2Operator(OP_OperatorTable *table)
 		&Ocio_file_transform::variable_pair,
 		0, // not generator
 		Ocio_file_transform::input_labels_list));
+
+	//OCIOCDLTransform
+	table->addOperator(new OP_Operator("OCIOCDLTransform",
+		"OCIOCDLTransform",
+		Ocio_cdl_transform::ocio_cdl_transform_factory,
+		&Ocio_cdl_transform::template_pair,
+		1,
+		2, // optional mask input.
+		&Ocio_cdl_transform::variable_pair,
+		0, // not generator
+		Ocio_cdl_transform::input_labels_list));
 			
 };
