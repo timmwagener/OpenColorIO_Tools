@@ -34,16 +34,68 @@ namespace ocio_cdl_transform_parameters
 
 	//prm_cop_default
 	//Macro expanding to default COP2 tabs for Mask and Frame Scope
-	COP_MASK_SWITCHER(1, "OCIOCDLTransform");
+	COP_MASK_SWITCHER(10, "OCIOCDLTransform");
 	PRM_Template prm_cop_default = PRM_Template(PRM_SWITCHER, 3, &PRMswitcherName, switcher);
 
-	//prm_temp
-	static PRM_Name prm_temp_name("temp", "temp");
-	static PRM_Default prm_temp_default(0);
-	const char* prm_temp_help_text = "Temp parameter";
-	PRM_Template prm_temp = PRM_Template(PRM_TOGGLE, 1, &prm_temp_name,
-		&prm_temp_default, 0, 0, 0, 0, 0, prm_temp_help_text, 0);
+	//prm_slope
+	static PRM_Name prm_slope_name("slope", "slope");
+	const char* prm_slope_help_text = "Slope";
+	PRM_Template prm_slope = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_slope_name, 0, 0, 0, 0, 0, 0, prm_slope_help_text, 0);
 
+	//prm_last_slope
+	static PRM_Name prm_last_slope_name("last_slope", "last_slope");
+	PRM_Template prm_last_slope = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_slope_name, 0, 0, 0, 0, 0, 0, 0, 0);
+
+
+	//prm_offset
+	static PRM_Name prm_offset_name("offset", "offset");
+	const char* prm_offset_help_text = "Offset";
+	PRM_Template prm_offset = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_offset_name, 0, 0, 0, 0, 0, 0, prm_offset_help_text, 0);
+
+	//prm_last_offset
+	static PRM_Name prm_last_offset_name("last_offset", "last_offset");
+	PRM_Template prm_last_offset = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_offset_name, 0, 0, 0, 0, 0, 0, 0, 0);
+	
+
+	//prm_power
+	static PRM_Name prm_power_name("power", "power");
+	const char* prm_power_help_text = "Power";
+	PRM_Template prm_power = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_power_name, 0, 0, 0, 0, 0, 0, prm_power_help_text, 0);
+
+	//prm_last_power
+	static PRM_Name prm_last_power_name("last_power", "last_power");
+	PRM_Template prm_last_power = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_power_name, 0, 0, 0, 0, 0, 0, 0, 0);
+
+
+	//prm_saturation
+	static PRM_Name prm_saturation_name("saturation", "saturation");
+	static PRM_Default prm_saturation_default(1);
+	PRM_Template prm_saturation = PRM_Template(PRM_FLT, 1, &prm_saturation_name, &prm_saturation_default);
+
+	//prm_last_saturation
+	static PRM_Name prm_last_saturation_name("last_saturation", "last_saturation");
+	static PRM_Default prm_last_saturation_default(1);
+	PRM_Template prm_last_saturation = PRM_Template(PRM_FLT, 1, &prm_last_saturation_name, &prm_last_saturation_default);
+
+
+	//prm_direction
+	static PRM_Name prm_direction_name("direction", "direction");
+	static PRM_Default prm_direction_default(0);
+	static PRM_Name prm_direction_choices[] =
+	{
+		PRM_Name("Forward", "Forward"),
+		PRM_Name("Inverse", "Inverse"),
+		PRM_Name(0)
+	};
+	static PRM_ChoiceList prm_direction_choice_list(PRM_CHOICELIST_SINGLE, prm_direction_choices);
+	PRM_Template prm_direction = PRM_Template(PRM_ORD, TOOL_PARM, 1, &prm_direction_name, &prm_direction_default, &prm_direction_choice_list);
+
+	//prm_last_direction
+	static PRM_Name prm_last_direction_name("last_direction", "last_direction");
+	static PRM_Default prm_last_direction_default(0);
+	PRM_Template prm_last_direction = PRM_Template(PRM_ORD, 1,
+		&prm_last_direction_name,
+		&prm_last_direction_default);
 }
 
 
@@ -53,7 +105,16 @@ namespace ocio_cdl_transform_parameters
 PRM_Template Ocio_cdl_transform::template_list[] =
 {
 	ocio_cdl_transform_parameters::prm_cop_default,
-	ocio_cdl_transform_parameters::prm_temp,
+	ocio_cdl_transform_parameters::prm_slope,
+	ocio_cdl_transform_parameters::prm_last_slope,
+	ocio_cdl_transform_parameters::prm_offset,
+	ocio_cdl_transform_parameters::prm_last_offset,
+	ocio_cdl_transform_parameters::prm_power,
+	ocio_cdl_transform_parameters::prm_last_power,
+	ocio_cdl_transform_parameters::prm_saturation,
+	ocio_cdl_transform_parameters::prm_last_saturation,
+	ocio_cdl_transform_parameters::prm_direction,
+	ocio_cdl_transform_parameters::prm_last_direction,
 	//Sentinel (needed)
 	PRM_Template()
 };
