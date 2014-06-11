@@ -34,7 +34,7 @@ namespace ocio_cdl_transform_parameters
 
 	//prm_cop_default
 	//Macro expanding to default COP2 tabs for Mask and Frame Scope
-	COP_MASK_SWITCHER(10, "OCIOCDLTransform");
+	COP_MASK_SWITCHER(17, "OCIOCDLTransform");
 	PRM_Template prm_cop_default = PRM_Template(PRM_SWITCHER, 3, &PRMswitcherName, switcher);
 
 	//prm_slope
@@ -96,6 +96,47 @@ namespace ocio_cdl_transform_parameters
 	PRM_Template prm_last_direction = PRM_Template(PRM_ORD, 1,
 		&prm_last_direction_name,
 		&prm_last_direction_default);
+
+	
+	//prm_node_or_file
+	static PRM_Name prm_node_or_file_name("node_or_file", "node_or_file");
+	static PRM_Default prm_node_or_file_default(0);
+	const char* prm_node_or_file_help_text = "Use the node settings like slope, power and saturation for grading,\
+																						\n or load an cdl file.";
+	PRM_Template prm_node_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_node_or_file_name,
+		&prm_node_or_file_default, 0, 0, 0, 0, 0,
+		prm_node_or_file_help_text, 0);
+
+	//prm_last_node_or_file
+	static PRM_Name prm_last_node_or_file_name("last_node_or_file", "last_node_or_file");
+	static PRM_Default prm_last_node_or_file_default(0);
+	PRM_Template prm_last_node_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_last_node_or_file_name,
+		&prm_last_node_or_file_default, 0, 0, 0, 0, 0);
+	
+	
+	//prm_lut_file_path
+	static PRM_Name prm_lut_file_path_name("lut_file_path", "lut_file_path");
+	PRM_Template prm_lut_file_path = PRM_Template(PRM_FILE, 1, &prm_lut_file_path_name);
+
+	//prm_last_lut_file_path
+	static PRM_Name prm_last_lut_file_path_name("last_lut_file_path", "last_lut_file_path");
+	PRM_Template prm_last_lut_file_path = PRM_Template(PRM_FILE, 1, &prm_last_lut_file_path_name);
+
+
+	//prm_cccid
+	static PRM_Name prm_cccid_name("cccid", "cccid");
+	PRM_Template prm_cccid = PRM_Template(PRM_FILE, 1, &prm_cccid_name);
+
+	//prm_last_cccid
+	static PRM_Name prm_last_cccid_name("last_cccid", "last_cccid");
+	PRM_Template prm_last_cccid = PRM_Template(PRM_FILE, 1, &prm_last_cccid_name);
+
+
+	//prm_export_grade
+	static PRM_Name prm_export_grade_name("export_grade", "export_grade");
+	PRM_Template prm_export_grade = PRM_Template(PRM_CALLBACK, 1, &prm_export_grade_name, 0, 0, 0,
+		Ocio_cdl_transform::export_grade);
+
 }
 
 
@@ -115,6 +156,13 @@ PRM_Template Ocio_cdl_transform::template_list[] =
 	ocio_cdl_transform_parameters::prm_last_saturation,
 	ocio_cdl_transform_parameters::prm_direction,
 	ocio_cdl_transform_parameters::prm_last_direction,
+	ocio_cdl_transform_parameters::prm_node_or_file,
+	ocio_cdl_transform_parameters::prm_last_node_or_file,
+	ocio_cdl_transform_parameters::prm_lut_file_path,
+	ocio_cdl_transform_parameters::prm_last_lut_file_path,
+	ocio_cdl_transform_parameters::prm_cccid,
+	ocio_cdl_transform_parameters::prm_last_cccid,
+	ocio_cdl_transform_parameters::prm_export_grade,
 	//Sentinel (needed)
 	PRM_Template()
 };
@@ -259,6 +307,29 @@ OP_ERROR Ocio_cdl_transform::filter(COP2_Context& context,
 		{
 			//copy input to output
 			memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+
+			//if processor exists do colorspace conversion
+			if (processor_exists())
+			{
+				//fill_data_ptr_1
+				float* fill_data_ptr_1 = new float[context.myXsize*context.myYsize * sizeof(float)];
+				memcpy(fill_data_ptr_1, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+				//fill_data_ptr_2
+				float* fill_data_ptr_2 = new float[context.myXsize*context.myYsize * sizeof(float)];
+				memcpy(fill_data_ptr_2, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+
+				//color transform
+				OCIO_functionality::color_transform_rgb_array(output_data_ptr,
+					fill_data_ptr_1,
+					fill_data_ptr_2,
+					processor,
+					context.myXsize,
+					context.myYsize);
+
+				//delete ptr
+				delete[] fill_data_ptr_1;
+				delete[] fill_data_ptr_2;
+			};
 		};
 	
 	};
@@ -276,12 +347,54 @@ OP_ERROR Ocio_cdl_transform::filter(COP2_Context& context,
 
 
 //set_processor
-void Ocio_cdl_transform::set_processor(int env_or_file, std::string config_file_path, int operation)
+void Ocio_cdl_transform::set_processor(float*& ptr_slope,
+	float*& ptr_offset,
+	float*& ptr_power,
+	float saturation,
+	int direction)
 {
+	//ptr_sop
+	float* ptr_sop = new float[9];
+
+	//set sop_ptr
+	ptr_sop[0] = ptr_slope[0];
+	ptr_sop[1] = ptr_slope[1];
+	ptr_sop[2] = ptr_slope[2];
+
+	ptr_sop[3] = ptr_offset[0];
+	ptr_sop[4] = ptr_offset[1];
+	ptr_sop[5] = ptr_offset[2];
+
+	ptr_sop[6] = ptr_power[0];
+	ptr_sop[7] = ptr_power[1];
+	ptr_sop[8] = ptr_power[2];
 
 
-	//log
-	log("Set processor.");
+
+
+	//Fake test
+	ptr_sop[0] = 0.045;
+	ptr_sop[1] = 0.045;
+	ptr_sop[2] = 0.045;
+
+	ptr_sop[3] = 0;
+	ptr_sop[4] = 0;
+	ptr_sop[5] = 0;
+
+	ptr_sop[6] = 1;
+	ptr_sop[7] = 1;
+	ptr_sop[8] = 1;
+
+	//set processor
+	processor = OCIO_functionality::get_processor_from_cdl_transform(ptr_sop, saturation, direction);
+
+	//display msg
+	if (!processor)
+		log("Processor empty");
+	else
+		log("Processor set");
+
+	delete[] ptr_sop;
 
 };
 
@@ -294,8 +407,20 @@ bool Ocio_cdl_transform::processor_exists()
 	return true;
 };
 
+//export_grade
+int Ocio_cdl_transform::export_grade(void *data,
+										int index,
+										float time,
+										const PRM_Template* prm_template)
+{
+	//Cast ptr to yourself
+	Ocio_cdl_transform* node = (Ocio_cdl_transform*)data;
+	
+	//log
+	node->log("Export Grade");
 
-
+	return 1;
+};
 
 
 
@@ -341,6 +466,38 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 
 	//Get Attributes
 	//-----------------------------------------------
+	
+	//ptr_slope
+	float* ptr_slope = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_slope.getToken(), ptr_slope);
+	//ptr_last_slope
+	float* ptr_last_slope = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_last_slope.getToken(), ptr_last_slope);
+
+	//ptr_offset
+	float* ptr_offset = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_offset.getToken(), ptr_offset);
+	//ptr_last_offset
+	float* ptr_last_offset = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_last_offset.getToken(), ptr_last_offset);
+
+	//ptr_power
+	float* ptr_power = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_power.getToken(), ptr_power);
+	//ptr_last_power
+	float* ptr_last_power = new float[3];
+	get_color_parameter(ocio_cdl_transform_parameters::prm_last_power.getToken(), ptr_last_power);
+
+	//saturation
+	float saturation = get_float_parameter(ocio_cdl_transform_parameters::prm_saturation.getToken());
+	//last_saturation
+	float last_saturation = get_float_parameter(ocio_cdl_transform_parameters::prm_last_saturation.getToken());
+	
+	//direction
+	int direction = get_int_parameter(ocio_cdl_transform_parameters::prm_direction.getToken());
+	//last_direction
+	int last_direction = get_int_parameter(ocio_cdl_transform_parameters::prm_last_direction.getToken());
+
 
 	
 	
@@ -349,12 +506,69 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 	//Set processor
 	//-----------------------------------------------
 	
+	////first_execution
+	//if (first_execution)
+	//{
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	//	//first_execution false
+	//	first_execution = false;
+	//}
+	////slope changed
+	//else if (!colors_equal(ptr_slope, ptr_last_slope))
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	////offset changed
+	//else if (!colors_equal(ptr_offset, ptr_last_offset))
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	////power changed
+	//else if (!colors_equal(ptr_power, ptr_last_power))
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	////saturation changed
+	//else if (saturation != last_saturation)
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	////direction changed
+	//else if (direction != last_direction)
+	//	//set_processor
+	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		
 	
 	
+	//set_processor
+	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	//first_execution false
+	first_execution = false;
 	
+
+
+
+	//Set Attributes
+	//-----------------------------------------------
 	
+	//set last_slope
+	set_parameter(ocio_cdl_transform_parameters::prm_last_slope.getToken(), ptr_slope);
+	//set last_offset
+	set_parameter(ocio_cdl_transform_parameters::prm_last_offset.getToken(), ptr_offset);
+	//set last_power
+	set_parameter(ocio_cdl_transform_parameters::prm_last_power.getToken(), ptr_power);
+	//set last_saturation
+	set_parameter(ocio_cdl_transform_parameters::prm_last_saturation.getToken(), saturation);
+	//last_direction
+	set_parameter(ocio_cdl_transform_parameters::prm_last_direction.getToken(), direction);
+
 	
+	//Delete ptr
+	//-----------------------------------------------
 	
+	delete[] ptr_slope;
+	delete[] ptr_last_slope;
+	delete[] ptr_offset;
+	delete[] ptr_last_offset;
+	delete[] ptr_power;
+	delete[] ptr_last_power;
 	
 	
 	
@@ -400,6 +614,23 @@ float Ocio_cdl_transform::get_time()
 	return float_current_time;
 }
 
+//colors_equal
+bool Ocio_cdl_transform::colors_equal(float*& color_a, float*& color_b, int length)
+{
+	//colors_equal
+	bool colors_equal = true;
+
+	//iterate and compare
+	for (int index = 0; index < length; index++)
+	{
+		if (color_a[index] != color_b[index])
+			colors_equal = false;
+	}
+
+	return colors_equal;
+
+};
+
 
 
 
@@ -407,3 +638,143 @@ float Ocio_cdl_transform::get_time()
 //-----------------------------------------------
 //-----------------------------------------------
 
+//get_int_parameter
+int Ocio_cdl_transform::get_int_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	int result = evalInt(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_bool_parameter
+bool Ocio_cdl_transform::get_bool_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	bool result = evalInt(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_float_parameter
+float Ocio_cdl_transform::get_float_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	float result = evalFloat(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_string_parameter
+std::string Ocio_cdl_transform::get_string_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//ut_result
+	UT_String ut_result;
+
+	//aquire ut_result
+	evalString(ut_result, ut_parameter_name, 0, time);
+
+	//result
+	std::string result = ut_result.toStdString();
+
+	return result;
+};
+
+//get_color_parameter
+void Ocio_cdl_transform::get_color_parameter(const char* parameter_name, float*& ptr_color, int length)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//set result
+	for (int index = 0; index < length; index++)
+	{
+		ptr_color[index] = evalFloat(ut_parameter_name, index, time);
+	}
+};
+
+//set_parameter
+void Ocio_cdl_transform::set_parameter(const char* parameter_name, std::string parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//ut_parameter_value
+	UT_String ut_parameter_value(parameter_value);
+
+	//time
+	float time = get_time();
+
+	//set parameter_value
+	setString(ut_parameter_value, CH_STRING_LITERAL, ut_parameter_name, 0, time);
+};
+
+//set_parameter
+void Ocio_cdl_transform::set_parameter(const char* parameter_name, int parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//setInt
+	setInt(ut_parameter_name, 0, time, parameter_value);
+};
+
+//set_parameter
+void Ocio_cdl_transform::set_parameter(const char* parameter_name, float parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//setFloat
+	setFloat(ut_parameter_name, 0, time, parameter_value);
+};
+
+//set_parameter
+void Ocio_cdl_transform::set_parameter(const char* parameter_name, float* parameter_value, int length)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//set value
+	for (int index = 0; index < length; index++)
+	{
+		//setFloat
+		setFloat(ut_parameter_name, index, time, parameter_value[index]);
+	};
+};

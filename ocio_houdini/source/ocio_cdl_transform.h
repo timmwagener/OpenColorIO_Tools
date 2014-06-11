@@ -132,16 +132,32 @@ public:
 	
 	//OCIO
 	//-----------------------------------------------
-	void set_processor(int, std::string, int);
+	void set_processor(float*& ptr_slope, 
+						float*& ptr_offset, 
+						float*& ptr_power, 
+						float saturation, 
+						int direction);
 	bool processor_exists();
+	static int export_grade(void *data, int, float, const PRM_Template*);
 	
 	//Misc
 	//-----------------------------------------------
 	void log(const char*);
 	float get_time();
+	bool colors_equal(float*&, float*&, int length = 3);
 	
 	//Getter & Setter
 	//-----------------------------------------------
+	int get_int_parameter(const char* parameter_name);
+	bool get_bool_parameter(const char* parameter_name);
+	float get_float_parameter(const char* parameter_name);
+	std::string get_string_parameter(const char* parameter_name);
+	void get_color_parameter(const char* parameter_name, float*&, int length = 3);
+
+	void set_parameter(const char* parameter_name, std::string parameter_value);
+	void set_parameter(const char* parameter_name, int parameter_value);
+	void set_parameter(const char* parameter_name, float parameter_value);
+	void set_parameter(const char* parameter_name, float* parameter_value, int length = 3);
 
 	//Temp
 	//-----------------------------------------------

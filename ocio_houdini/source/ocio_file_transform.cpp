@@ -418,7 +418,11 @@ COP2_ContextData* Ocio_file_transform::newContextData(const TIL_Plane* plane,
 	
 	//first_execution
 	if (first_execution)
+	{
 		set_processor(lut_file_path, cccid, direction, interpolation);
+		//first_execution false
+		first_execution = false;
+	}
 	//lut_file_path
 	else if (lut_file_path.compare(last_lut_file_path) != 0)
 		set_processor(lut_file_path, cccid, direction, interpolation);
