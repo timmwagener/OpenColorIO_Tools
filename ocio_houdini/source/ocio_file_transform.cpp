@@ -169,7 +169,7 @@ Ocio_file_transform::Ocio_file_transform(OP_Network* parent,
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
 									log_messages(true),
-									internal_parms_visible(true)
+									internal_parms_visible(false)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -202,11 +202,16 @@ OP_ERROR Ocio_file_transform::doCookMyTile(COP2_Context& context, TIL_TileList* 
 bool Ocio_file_transform::updateParmsFlags()
 {
 	//time
-	fpreal time = CHgetEvalTime();
+	float time = get_time();
 	
 	//attribute_change_occured (assign value from superclass function call)
 	bool attribute_change_occured = COP2_MaskOp::updateParmsFlags();
 	
+	//Set attrs. invisible
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_lut_file_path.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_cccid.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_direction.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_interpolation.getToken(), internal_parms_visible);
 	
 	return attribute_change_occured;
 }
@@ -257,7 +262,35 @@ OP_ERROR Ocio_file_transform::filter(COP2_Context& context,
 		{
 			//copy input to output
 			memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+
+			//if processor exists do colorspace conversion
+			if (processor_exists())
+			{
+				//fill_data_ptr_1
+				float* fill_data_ptr_1 = new float[context.myXsize*context.myYsize * sizeof(float)];
+				memcpy(fill_data_ptr_1, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+				//fill_data_ptr_2
+				float* fill_data_ptr_2 = new float[context.myXsize*context.myYsize * sizeof(float)];
+				memcpy(fill_data_ptr_2, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+
+				//color transform
+				OCIO_functionality::color_transform_rgb_array(output_data_ptr,
+					fill_data_ptr_1,
+					fill_data_ptr_2,
+					processor,
+					context.myXsize,
+					context.myYsize);
+
+				//delete ptr
+				delete[] fill_data_ptr_1;
+				delete[] fill_data_ptr_2;
+			};
 		};
+
+		
+		
+		
+
 	
 	};
 
@@ -274,12 +307,29 @@ OP_ERROR Ocio_file_transform::filter(COP2_Context& context,
 
 
 //set_processor
-void Ocio_file_transform::set_processor(int env_or_file, std::string config_file_path, int operation)
+void Ocio_file_transform::set_processor(std::string lut_file_path_value,
+										std::string cccid_value,
+										int direction_value,
+										int interpolation_value)
 {
 
 
-	//log
-	log("Set processor.");
+	//set processor
+	processor = OCIO_functionality::get_processor_from_file_transform(lut_file_path_value,
+		cccid_value,
+		direction_value,
+		interpolation_value);
+	
+	//msg_set_processor_success
+	std::string msg_set_processor_success("Processor set");
+	//msg_set_processor_failure
+	std::string msg_set_processor_failure("No Lut file path set. No transformation will be applied. ");
+
+	//display msg
+	if (!lut_file_path_value.size())
+		log(msg_set_processor_failure.c_str());
+	else
+		log(msg_set_processor_success.c_str());
 
 };
 
@@ -340,6 +390,25 @@ COP2_ContextData* Ocio_file_transform::newContextData(const TIL_Plane* plane,
 	//Get Attributes
 	//-----------------------------------------------
 
+	//lut_file_path
+	std::string lut_file_path = get_string_parameter(ocio_file_transform_parameters::prm_lut_file_path_name.getToken());
+	//last_lut_file_path
+	std::string last_lut_file_path = get_string_parameter(ocio_file_transform_parameters::prm_last_lut_file_path_name.getToken());
+	
+	//cccid
+	std::string cccid = get_string_parameter(ocio_file_transform_parameters::prm_cccid.getToken());
+	//last_cccid
+	std::string last_cccid = get_string_parameter(ocio_file_transform_parameters::prm_last_cccid.getToken());
+
+	//direction
+	int direction = get_int_parameter(ocio_file_transform_parameters::prm_direction.getToken());
+	//last_direction
+	int last_direction = get_int_parameter(ocio_file_transform_parameters::prm_last_direction.getToken());
+
+	//interpolation
+	int interpolation = get_int_parameter(ocio_file_transform_parameters::prm_interpolation.getToken());
+	//last_interpolation
+	int last_interpolation = get_int_parameter(ocio_file_transform_parameters::prm_last_interpolation.getToken());
 	
 	
 	
@@ -347,6 +416,37 @@ COP2_ContextData* Ocio_file_transform::newContextData(const TIL_Plane* plane,
 	//Set processor
 	//-----------------------------------------------
 	
+	//first_execution
+	if (first_execution)
+		set_processor(lut_file_path, cccid, direction, interpolation);
+	//lut_file_path
+	else if (lut_file_path.compare(last_lut_file_path) != 0)
+		set_processor(lut_file_path, cccid, direction, interpolation);
+	//cccid
+	else if (cccid.compare(last_cccid) != 0)
+		set_processor(lut_file_path, cccid, direction, interpolation);
+	//direction
+	else if (direction != last_direction)
+		set_processor(lut_file_path, cccid, direction, interpolation);
+	//interpolation
+	else if (interpolation != last_interpolation)
+		set_processor(lut_file_path, cccid, direction, interpolation);
+	
+	
+	
+	
+	
+	//Set Attributes
+	//-----------------------------------------------
+	
+	//last_lut_file_path
+	set_parameter(ocio_file_transform_parameters::prm_last_lut_file_path_name.getToken(), lut_file_path);
+	//last_cccid
+	set_parameter(ocio_file_transform_parameters::prm_last_cccid.getToken(), cccid);
+	//last_direction
+	set_parameter(ocio_file_transform_parameters::prm_last_direction.getToken(), direction);
+	//last_interpolation
+	set_parameter(ocio_file_transform_parameters::prm_last_interpolation.getToken(), interpolation);
 	
 	
 	
@@ -354,9 +454,7 @@ COP2_ContextData* Ocio_file_transform::newContextData(const TIL_Plane* plane,
 	
 	
 	
-	
-	
-	//Custom param values for context data
+	//Package context data
 	//-----------------------------------------------
 
 	//context_data (store custom parameter values here)
@@ -405,3 +503,110 @@ float Ocio_file_transform::get_time()
 //-----------------------------------------------
 //-----------------------------------------------
 
+//get_int_parameter
+int Ocio_file_transform::get_int_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	int result = evalInt(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_bool_parameter
+bool Ocio_file_transform::get_bool_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	bool result = evalInt(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_float_parameter
+float Ocio_file_transform::get_float_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//result
+	float result = evalFloat(ut_parameter_name, 0, time);
+
+	return result;
+};
+
+//get_string_parameter
+std::string Ocio_file_transform::get_string_parameter(const char* parameter_name)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+	
+	//ut_result
+	UT_String ut_result;
+
+	//aquire ut_result
+	evalString(ut_result, ut_parameter_name, 0, time);
+
+	//result
+	std::string result = ut_result.toStdString();
+
+	return result;
+};
+
+//set_parameter
+void Ocio_file_transform::set_parameter(const char* parameter_name, std::string parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+	
+	//ut_parameter_value
+	UT_String ut_parameter_value(parameter_value);
+
+	//time
+	float time = get_time();
+
+	//set parameter_value
+	setString(ut_parameter_value, CH_STRING_LITERAL, ut_parameter_name, 0, time);
+};
+
+//set_parameter
+void Ocio_file_transform::set_parameter(const char* parameter_name, int parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//setInt
+	setInt(ut_parameter_name, 0, time, parameter_value);
+};
+
+//set_parameter
+void Ocio_file_transform::set_parameter(const char* parameter_name, float parameter_value)
+{
+	//ut_parameter_name
+	UT_String ut_parameter_name(parameter_name);
+
+	//time
+	float time = get_time();
+
+	//setFloat
+	setFloat(ut_parameter_name, 0, time, parameter_value);
+};

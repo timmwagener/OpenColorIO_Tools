@@ -133,7 +133,7 @@ public:
 	
 	//OCIO
 	//-----------------------------------------------
-	void set_processor(int, std::string, int);
+	void set_processor(std::string, std::string, int, int);
 	bool processor_exists();
 	
 	//Misc
@@ -143,6 +143,14 @@ public:
 	
 	//Getter & Setter
 	//-----------------------------------------------
+	int get_int_parameter(const char* parameter_name);
+	bool get_bool_parameter(const char* parameter_name);
+	float get_float_parameter(const char* parameter_name);
+	std::string get_string_parameter(const char* parameter_name);
+
+	void set_parameter(const char* parameter_name, std::string parameter_value);
+	void set_parameter(const char* parameter_name, int parameter_value);
+	void set_parameter(const char* parameter_name, float parameter_value);
 
 	//Temp
 	//-----------------------------------------------
