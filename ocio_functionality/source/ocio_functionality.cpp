@@ -333,7 +333,6 @@ OCIO::ConstProcessorRcPtr OCIO_functionality::get_processor_from_cdl_transform(f
 		//set processor
 		processor = config->getProcessor(transform, OCIO::TRANSFORM_DIR_FORWARD);
 
-
 	}
 	catch (OCIO::Exception &e)
 	{

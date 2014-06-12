@@ -28,6 +28,7 @@ A COP2_MaskOp node that allows to grade pixel values according to the ACES stand
 #include "boost/lexical_cast.hpp"
 //Houdini
 #include <OP/OP_Director.h>
+#include <MOT/MOT_Director.h>
 #include <CH/CH_Manager.h>
 #include <PRM/PRM_Include.h>
 #include <PRM/PRM_Parm.h>
@@ -78,9 +79,7 @@ public:
 	static PRM_Template template_list[];
 	static CH_LocalVariable local_variable_list[];
 	static const char* input_labels_list[];
-	//OCIO
-	//-----------------------------------------------
-	OCIO::ConstProcessorRcPtr processor;
+	
 	//Misc
 	//-----------------------------------------------
 	bool first_execution;
@@ -137,7 +136,14 @@ public:
 						float*& ptr_power, 
 						float saturation, 
 						int direction);
+	void set_processor(std::string, std::string, int, int);
 	bool processor_exists();
+	std::string get_cc_xml(float*& ptr_slope,
+							float*& ptr_offset,
+							float*& ptr_power,
+							float saturation,
+							int direction);
+	void write_to_file(std::string&, std::string&);
 	static int export_grade(void *data, int, float, const PRM_Template*);
 	
 	//Misc
@@ -194,6 +200,14 @@ protected:
 	//updateParmsFlags
 	bool updateParmsFlags();
 
+	//disableParms
+	unsigned disableParms();
+
+private:
+	//OCIO
+	//-----------------------------------------------
+	OCIO::ConstProcessorRcPtr processor;
+
 
 };
 
@@ -211,12 +225,10 @@ public:
 	UT_Lock	 image_lock;
 	std::string plane_name;
 	int component_count;
-	
 
 	//Methods
 	Ocio_cdl_transform_context_data() {}
 	virtual	~Ocio_cdl_transform_context_data() {}
-
 	
 };
 

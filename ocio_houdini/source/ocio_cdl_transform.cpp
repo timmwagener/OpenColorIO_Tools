@@ -40,41 +40,41 @@ namespace ocio_cdl_transform_parameters
 	//prm_slope
 	static PRM_Name prm_slope_name("slope", "slope");
 	const char* prm_slope_help_text = "Slope";
-	PRM_Template prm_slope = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_slope_name, 0, 0, 0, 0, 0, 0, prm_slope_help_text, 0);
+	PRM_Template prm_slope = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_slope_name, PRMoneDefaults);
 
 	//prm_last_slope
 	static PRM_Name prm_last_slope_name("last_slope", "last_slope");
-	PRM_Template prm_last_slope = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_slope_name, 0, 0, 0, 0, 0, 0, 0, 0);
+	PRM_Template prm_last_slope = PRM_Template(PRM_RGB, 4, &prm_last_slope_name, PRMoneDefaults);
 
 
 	//prm_offset
 	static PRM_Name prm_offset_name("offset", "offset");
 	const char* prm_offset_help_text = "Offset";
-	PRM_Template prm_offset = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_offset_name, 0, 0, 0, 0, 0, 0, prm_offset_help_text, 0);
+	PRM_Template prm_offset = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_offset_name);
 
 	//prm_last_offset
 	static PRM_Name prm_last_offset_name("last_offset", "last_offset");
-	PRM_Template prm_last_offset = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_offset_name, 0, 0, 0, 0, 0, 0, 0, 0);
+	PRM_Template prm_last_offset = PRM_Template(PRM_RGB, 4, &prm_last_offset_name);
 	
 
 	//prm_power
 	static PRM_Name prm_power_name("power", "power");
 	const char* prm_power_help_text = "Power";
-	PRM_Template prm_power = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_power_name, 0, 0, 0, 0, 0, 0, prm_power_help_text, 0);
+	PRM_Template prm_power = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_power_name, PRMoneDefaults);
 
 	//prm_last_power
 	static PRM_Name prm_last_power_name("last_power", "last_power");
-	PRM_Template prm_last_power = PRM_Template(PRM_RGB, TOOL_PARM, 4, &prm_last_power_name, 0, 0, 0, 0, 0, 0, 0, 0);
+	PRM_Template prm_last_power = PRM_Template(PRM_RGB, 4, &prm_last_power_name, PRMoneDefaults);
 
 
 	//prm_saturation
 	static PRM_Name prm_saturation_name("saturation", "saturation");
-	static PRM_Default prm_saturation_default(1);
-	PRM_Template prm_saturation = PRM_Template(PRM_FLT, 1, &prm_saturation_name, &prm_saturation_default);
+	static PRM_Default prm_saturation_default(1.0);
+	PRM_Template prm_saturation = PRM_Template(PRM_FLT, TOOL_PARM, 1, &prm_saturation_name, &prm_saturation_default);
 
 	//prm_last_saturation
 	static PRM_Name prm_last_saturation_name("last_saturation", "last_saturation");
-	static PRM_Default prm_last_saturation_default(1);
+	static PRM_Default prm_last_saturation_default(1.0);
 	PRM_Template prm_last_saturation = PRM_Template(PRM_FLT, 1, &prm_last_saturation_name, &prm_last_saturation_default);
 
 
@@ -103,15 +103,14 @@ namespace ocio_cdl_transform_parameters
 	static PRM_Default prm_node_or_file_default(0);
 	const char* prm_node_or_file_help_text = "Use the node settings like slope, power and saturation for grading,\
 																						\n or load an cdl file.";
-	PRM_Template prm_node_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_node_or_file_name,
-		&prm_node_or_file_default, 0, 0, 0, 0, 0,
-		prm_node_or_file_help_text, 0);
+	PRM_Template prm_node_or_file = PRM_Template(PRM_TOGGLE, TOOL_PARM, 1, &prm_node_or_file_name,
+		&prm_node_or_file_default);
 
 	//prm_last_node_or_file
 	static PRM_Name prm_last_node_or_file_name("last_node_or_file", "last_node_or_file");
 	static PRM_Default prm_last_node_or_file_default(0);
 	PRM_Template prm_last_node_or_file = PRM_Template(PRM_TOGGLE, 1, &prm_last_node_or_file_name,
-		&prm_last_node_or_file_default, 0, 0, 0, 0, 0);
+		&prm_last_node_or_file_default);
 	
 	
 	//prm_lut_file_path
@@ -131,6 +130,18 @@ namespace ocio_cdl_transform_parameters
 	static PRM_Name prm_last_cccid_name("last_cccid", "last_cccid");
 	PRM_Template prm_last_cccid = PRM_Template(PRM_FILE, 1, &prm_last_cccid_name);
 
+
+	//prm_export_switcher
+	static PRM_Name prm_export_switcher_name("export_switcher");
+	static PRM_Default prm_export_switcher_list[] = 
+	{
+		PRM_Default(2, "Export Grade")
+	};
+	PRM_Template prm_export_switcher = PRM_Template(PRM_SWITCHER, 1, &prm_export_switcher_name, prm_export_switcher_list);
+
+	//prm_export_grade_file_path
+	static PRM_Name prm_export_grade_file_path_name("export_grade_file_path", "export_grade_file_path");
+	PRM_Template prm_export_grade_file_path = PRM_Template(PRM_FILE, 1, &prm_export_grade_file_path_name);
 
 	//prm_export_grade
 	static PRM_Name prm_export_grade_name("export_grade", "export_grade");
@@ -162,6 +173,8 @@ PRM_Template Ocio_cdl_transform::template_list[] =
 	ocio_cdl_transform_parameters::prm_last_lut_file_path,
 	ocio_cdl_transform_parameters::prm_cccid,
 	ocio_cdl_transform_parameters::prm_last_cccid,
+	ocio_cdl_transform_parameters::prm_export_switcher,
+	ocio_cdl_transform_parameters::prm_export_grade_file_path,
 	ocio_cdl_transform_parameters::prm_export_grade,
 	//Sentinel (needed)
 	PRM_Template()
@@ -219,10 +232,12 @@ Ocio_cdl_transform::Ocio_cdl_transform(OP_Network* parent,
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
 									log_messages(true),
-									internal_parms_visible(true)
+									internal_parms_visible(false)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
+	//disable caching
+	enableDiskCache(false);
 };
 
 //~Ocio_cdl_transform
@@ -257,8 +272,38 @@ bool Ocio_cdl_transform::updateParmsFlags()
 	//attribute_change_occured (assign value from superclass function call)
 	bool attribute_change_occured = COP2_MaskOp::updateParmsFlags();
 	
+	//Set attrs. invisible
+
+	//last attrs
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_slope.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_offset.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_power.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_saturation.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_direction.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_lut_file_path.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_cccid.getToken(), internal_parms_visible);
+
 	
 	return attribute_change_occured;
+}
+
+//disableParms
+unsigned Ocio_cdl_transform::disableParms()
+{
+	
+	//parameter_changed
+	unsigned parameter_changed = COP2_MaskOp::disableParms();
+	
+	//node_or_file
+	bool node_or_file = get_bool_parameter(ocio_cdl_transform_parameters::prm_node_or_file.getToken());
+
+
+	parameter_changed += enableParm(ocio_cdl_transform_parameters::prm_lut_file_path.getToken(), node_or_file);
+	parameter_changed += enableParm(ocio_cdl_transform_parameters::prm_cccid.getToken(), node_or_file);
+
+	//again for other attributes ... 
+
+	return parameter_changed;
 }
 
 //filter_static
@@ -278,7 +323,7 @@ OP_ERROR Ocio_cdl_transform::filter(COP2_Context& context,
 {
 
 	//log
-	log("execute filter");
+	log("filter");
 
 
 	//Pixel operation to perform is implemented here
@@ -329,7 +374,11 @@ OP_ERROR Ocio_cdl_transform::filter(COP2_Context& context,
 				//delete ptr
 				delete[] fill_data_ptr_1;
 				delete[] fill_data_ptr_2;
-			};
+			}
+
+			//temp
+			else
+				log("From filter: Processor does not exist");
 		};
 	
 	};
@@ -370,21 +419,6 @@ void Ocio_cdl_transform::set_processor(float*& ptr_slope,
 	ptr_sop[8] = ptr_power[2];
 
 
-
-
-	//Fake test
-	ptr_sop[0] = 0.045;
-	ptr_sop[1] = 0.045;
-	ptr_sop[2] = 0.045;
-
-	ptr_sop[3] = 0;
-	ptr_sop[4] = 0;
-	ptr_sop[5] = 0;
-
-	ptr_sop[6] = 1;
-	ptr_sop[7] = 1;
-	ptr_sop[8] = 1;
-
 	//set processor
 	processor = OCIO_functionality::get_processor_from_cdl_transform(ptr_sop, saturation, direction);
 
@@ -398,6 +432,33 @@ void Ocio_cdl_transform::set_processor(float*& ptr_slope,
 
 };
 
+//set_processor
+void Ocio_cdl_transform::set_processor(std::string lut_file_path_value,
+	std::string cccid_value,
+	int direction_value,
+	int interpolation_value)
+{
+
+
+	//set processor
+	processor = OCIO_functionality::get_processor_from_file_transform(lut_file_path_value,
+		cccid_value,
+		direction_value,
+		interpolation_value);
+
+	//msg_set_processor_success
+	std::string msg_set_processor_success("Processor set");
+	//msg_set_processor_failure
+	std::string msg_set_processor_failure("No Lut file path set. No transformation will be applied. ");
+
+	//display msg
+	if (!lut_file_path_value.size())
+		log(msg_set_processor_failure.c_str());
+	else
+		log(msg_set_processor_success.c_str());
+
+};
+
 //processor_exists
 bool Ocio_cdl_transform::processor_exists()
 {
@@ -406,6 +467,68 @@ bool Ocio_cdl_transform::processor_exists()
 		return false;
 	return true;
 };
+
+//get_cc_xml
+std::string Ocio_cdl_transform::get_cc_xml(float*& ptr_slope,
+										float*& ptr_offset,
+										float*& ptr_power,
+										float saturation,
+										int direction)
+{
+	//ptr_sop
+	float* ptr_sop = new float[9];
+
+	//set sop_ptr
+	ptr_sop[0] = ptr_slope[0];
+	ptr_sop[1] = ptr_slope[1];
+	ptr_sop[2] = ptr_slope[2];
+
+	ptr_sop[3] = ptr_offset[0];
+	ptr_sop[4] = ptr_offset[1];
+	ptr_sop[5] = ptr_offset[2];
+
+	ptr_sop[6] = ptr_power[0];
+	ptr_sop[7] = ptr_power[1];
+	ptr_sop[8] = ptr_power[2];
+	
+	//str_xml
+	std::string str_xml = OCIO_functionality::get_xml_from_cdl_transform(ptr_sop, saturation, direction);
+
+	//delete ptr
+	delete[] ptr_sop;
+	
+	//return str_xml
+	return str_xml;
+};
+
+//write_to_file
+void Ocio_cdl_transform::write_to_file(std::string& str_xml, std::string& file_path)
+{
+	//cc_file
+	std::ofstream cc_file;
+
+	//open
+	cc_file.open(file_path, std::ios::out | std::ios::trunc);
+
+	//if open append
+	if (cc_file.is_open())
+	{
+		cc_file << str_xml.c_str();
+		//log
+		log("Exported grade to: ");
+		log(file_path.c_str());
+	}
+	else
+	{
+		log("Could not open and write to file");
+		log(file_path.c_str());
+	}
+		
+
+	//close
+	cc_file.close();
+
+}
 
 //export_grade
 int Ocio_cdl_transform::export_grade(void *data,
@@ -416,9 +539,58 @@ int Ocio_cdl_transform::export_grade(void *data,
 	//Cast ptr to yourself
 	Ocio_cdl_transform* node = (Ocio_cdl_transform*)data;
 	
-	//log
-	node->log("Export Grade");
+	
+	
+	//Get Attributes
+	//-----------------------------------------------
 
+	//ptr_slope
+	float* ptr_slope = new float[3];
+	node->get_color_parameter(ocio_cdl_transform_parameters::prm_slope.getToken(), ptr_slope);
+
+	//ptr_offset
+	float* ptr_offset = new float[3];
+	node->get_color_parameter(ocio_cdl_transform_parameters::prm_offset.getToken(), ptr_offset);
+	
+	//ptr_power
+	float* ptr_power = new float[3];
+	node->get_color_parameter(ocio_cdl_transform_parameters::prm_power.getToken(), ptr_power);
+	
+	//saturation
+	float saturation = node->get_float_parameter(ocio_cdl_transform_parameters::prm_saturation.getToken());
+	
+	//direction
+	int direction = node->get_int_parameter(ocio_cdl_transform_parameters::prm_direction.getToken());
+	
+
+	//export_grade_file_path
+	std::string export_grade_file_path(node->get_string_parameter(ocio_cdl_transform_parameters::prm_export_grade_file_path.getToken()));
+
+
+	
+	
+	
+	//Export
+	//-----------------------------------------------
+	
+	//str_xml
+	std::string str_xml = node->get_cc_xml(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+
+	//write_to_file
+	node->write_to_file(str_xml, export_grade_file_path);
+
+
+
+
+	//Delete ptr
+	//-----------------------------------------------
+
+	delete[] ptr_slope;
+	delete[] ptr_offset;
+	delete[] ptr_power;
+
+	
+	
 	return 1;
 };
 
@@ -499,6 +671,22 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 	int last_direction = get_int_parameter(ocio_cdl_transform_parameters::prm_last_direction.getToken());
 
 
+	//node_or_file
+	bool node_or_file = get_bool_parameter(ocio_cdl_transform_parameters::prm_node_or_file.getToken());
+	//last_node_or_file
+	bool last_node_or_file = get_bool_parameter(ocio_cdl_transform_parameters::prm_last_node_or_file.getToken());
+
+	//lut_file_path
+	std::string lut_file_path = get_string_parameter(ocio_cdl_transform_parameters::prm_lut_file_path_name.getToken());
+	//last_lut_file_path
+	std::string last_lut_file_path = get_string_parameter(ocio_cdl_transform_parameters::prm_last_lut_file_path_name.getToken());
+
+	//cccid
+	std::string cccid = get_string_parameter(ocio_cdl_transform_parameters::prm_cccid.getToken());
+	//last_cccid
+	std::string last_cccid = get_string_parameter(ocio_cdl_transform_parameters::prm_last_cccid.getToken());
+
+
 	
 	
 	
@@ -506,41 +694,77 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 	//Set processor
 	//-----------------------------------------------
 	
-	////first_execution
-	//if (first_execution)
-	//{
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	//	//first_execution false
-	//	first_execution = false;
-	//}
-	////slope changed
-	//else if (!colors_equal(ptr_slope, ptr_last_slope))
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	////offset changed
-	//else if (!colors_equal(ptr_offset, ptr_last_offset))
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	////power changed
-	//else if (!colors_equal(ptr_power, ptr_last_power))
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	////saturation changed
-	//else if (saturation != last_saturation)
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	////direction changed
-	//else if (direction != last_direction)
-	//	//set_processor
-	//	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	
+	//node_or_file == true
+	if (node_or_file)
+	{
+		//interpolation
+		int interpolation = 1;
+		
+		//first_execution
+		if (first_execution)
+		{
+			//set_processor
+			set_processor(lut_file_path, cccid, direction, interpolation);
+			//first_execution false
+			first_execution = false;
+		}
+		//node_or_file changed
+		else if (node_or_file != last_node_or_file)
+			set_processor(lut_file_path, cccid, direction, interpolation);
+		//lut_file_path
+		else if (lut_file_path.compare(last_lut_file_path) != 0)
+			set_processor(lut_file_path, cccid, direction, interpolation);
+		//cccid
+		else if (cccid.compare(last_cccid) != 0)
+			set_processor(lut_file_path, cccid, direction, interpolation);
+	}
+
+	//node_or_file == false
+	else
+	{
+		//first_execution
+		if (first_execution)
+		{
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+			//first_execution false
+			first_execution = false;
+		}
+		//node_or_file changed
+		else if (node_or_file != last_node_or_file)
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		//slope changed
+		else if (!colors_equal(ptr_slope, ptr_last_slope))
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		//offset changed
+		else if (!colors_equal(ptr_offset, ptr_last_offset))
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		//power changed
+		else if (!colors_equal(ptr_power, ptr_last_power))
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		//saturation changed
+		else if (saturation != last_saturation)
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+		//direction changed
+		else if (direction != last_direction)
+			//set_processor
+			set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
+	};
+
+
+
+	
 		
 	
 	
-	//set_processor
-	set_processor(ptr_slope, ptr_offset, ptr_power, saturation, direction);
-	//first_execution false
-	first_execution = false;
+	
+	
 	
 
 
@@ -558,6 +782,14 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 	set_parameter(ocio_cdl_transform_parameters::prm_last_saturation.getToken(), saturation);
 	//last_direction
 	set_parameter(ocio_cdl_transform_parameters::prm_last_direction.getToken(), direction);
+
+	//set last_node_or_file
+	set_parameter(ocio_cdl_transform_parameters::prm_last_node_or_file.getToken(), node_or_file);
+
+	//last_lut_file_path
+	set_parameter(ocio_cdl_transform_parameters::prm_last_lut_file_path_name.getToken(), lut_file_path);
+	//last_cccid
+	set_parameter(ocio_cdl_transform_parameters::prm_last_cccid.getToken(), cccid);
 
 	
 	//Delete ptr
@@ -584,10 +816,6 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 
 	//component_count
 	context_data->component_count = plane->getVectorSize();
-
-
-
-
 	
 	//return
 	return context_data;
