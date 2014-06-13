@@ -1,0 +1,73 @@
+
+
+
+Whats this?
+===========
+
+.. note::
+	Compile settings are aquired by the hcustom command line tool. They are specific to the system
+	and therefore need to be aquired for each system and Houdini version.
+	The values here can just be copied and pasted into the appropiate generated Visual Studio project
+	in the compilation command line settings.
+
+	This file is just information to ease the process of generating the compile ready Viusual Studio
+	project. It is not a necessary ingredient of the build.
+
+
+
+Home
+====
+
+#13.0.260
+---------
+
+Compile
+*******
+
+-nologo 
+-TP 
+-Zc:forScope 
+-DVERSION="13.0.260" 
+-DI386 
+-DWIN32 
+-DSWAP_BITFIELDS 
+-D_WIN32_WINNT=0x0501 
+-DWINVER=0x0501 
+-DNOMINMAX 
+-DSTRICT 
+-DWIN32_LEAN_AND_MEAN 
+-D_USE_MATH_DEFINES 
+-D_CRT_SECURE_NO_DEPRECATE 
+-D_CRT_NONSTDC_NO_DEPRECATE 
+-D_SCL_SECURE_NO_WARNINGS 
+-DBOOST_ALL_NO_LIB 
+-DSESI_LITTLE_ENDIAN 
+-DAMD64 
+-DSIZEOF_VOID_P=8 
+-DFBX_ENABLED=1 
+-DOPENCL_ENABLED=1 
+-DOPENVDB_ENABLED=1 
+-I .  
+-I "D:/tools/SIDEEF~1/HOUDIN~1.260/toolkit/include" 
+-I "C:/PROGRA~2/MICROS~3.0/VC/include" 
+-I "C:/Program Files (x86)/Windows Kits/8.0/Include/um" 
+-I "C:/Program Files (x86)/Windows Kits/8.0/Include/shared" 
+-wd4355 
+-w14996 
+-O2 
+-DNDEBUG 
+-MD 
+-EHsc
+-GR 
+-bigobj 
+-DMAKING_DSO
+
+Link
+****
+
+/machine:x64 
+-LIBPATH:"C:/PROGRA~2/MICROS~3.0/VC/lib/amd64" 
+-LIBPATH:"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64"   
+-LIBPATH:"D:/tools/SIDEEF~1/HOUDIN~1.260/custom/houdini/dsolib" 
+"D:/tools/SIDEEF~1/HOUDIN~1.260/custom/houdini/dsolib/*.a" 
+"D:/tools/SIDEEF~1/HOUDIN~1.260/custom/houdini/dsolib/*.lib" 
