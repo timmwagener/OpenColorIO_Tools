@@ -168,8 +168,8 @@ Ocio_file_transform::Ocio_file_transform(OP_Network* parent,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
-									log_messages(true),
-									internal_parms_visible(false)
+									log_messages(ocio_houdini_constants::LOG_MESSAGES ),
+									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -214,6 +214,12 @@ bool Ocio_file_transform::updateParmsFlags()
 	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_interpolation.getToken(), internal_parms_visible);
 	
 	return attribute_change_occured;
+}
+
+//getOperationInfo
+const char* Ocio_file_transform::getOperationInfo()
+{
+	return ocio_houdini_constants::OCIOFILETRANSFORM_OPERATION_INFO;
 }
 
 //filter_static

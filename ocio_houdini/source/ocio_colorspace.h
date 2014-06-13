@@ -212,9 +212,14 @@ protected:
 	//updateParmsFlags
 	bool updateParmsFlags();
 
+	//disableParms
+	unsigned disableParms();
+
 	//Set image bounds for operation
 	/*virtual void computeImageBounds(COP2_Context&);*/
 
+	//getOperationInfo
+	virtual const char* getOperationInfo();
 
 };
 

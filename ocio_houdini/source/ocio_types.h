@@ -31,7 +31,22 @@ ocio houdini.
 //-----------------------------------------------
 
 
+namespace ocio_houdini_constants
+{
+	//LOG_MESSAGES
+	extern bool LOG_MESSAGES;
+	//INTERNAL_PARMS_VISIBLE
+	extern bool INTERNAL_PARMS_VISIBLE;
 
+	//OCIOCOLORSPACE_OPERATION_INFO
+	extern const char* OCIOCOLORSPACE_OPERATION_INFO;
+	//OCIOLOGCONVERT_OPERATION_INFO
+	extern const char* OCIOLOGCONVERT_OPERATION_INFO;
+	//OCIOFILETRANSFORM_OPERATION_INFO
+	extern const char* OCIOFILETRANSFORM_OPERATION_INFO;
+	//OCIOCDLTRANSFORM_OPERATION_INFO
+	extern const char* OCIOCDLTRANSFORM_OPERATION_INFO;
+};
 
 
 

@@ -187,6 +187,8 @@ protected:
 	//updateParmsFlags
 	bool updateParmsFlags();
 
+	//getOperationInfo
+	virtual const char* getOperationInfo();
 
 };
 

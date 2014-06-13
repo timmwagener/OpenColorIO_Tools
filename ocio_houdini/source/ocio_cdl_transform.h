@@ -203,6 +203,9 @@ protected:
 	//disableParms
 	unsigned disableParms();
 
+	//getOperationInfo
+	virtual const char* getOperationInfo();
+
 private:
 	//OCIO
 	//-----------------------------------------------

@@ -156,8 +156,8 @@ Ocio_log_convert::Ocio_log_convert(OP_Network* parent,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
-									log_messages(true),
-									internal_parms_visible(true)
+									log_messages(ocio_houdini_constants::LOG_MESSAGES),
+									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -202,6 +202,32 @@ bool Ocio_log_convert::updateParmsFlags()
 	
 
 	return attribute_change_occured;
+}
+
+//disableParms
+unsigned Ocio_log_convert::disableParms()
+{
+
+	//parameter_changed
+	unsigned parameter_changed = COP2_MaskOp::disableParms();
+
+	//time
+	float time = get_time();
+	//env_or_file
+	int env_or_file = get_env_or_file(time);
+
+	parameter_changed += enableParm(ocio_log_convert_parameters::prm_config_file_path.getToken(), env_or_file);
+	
+
+	//again for other attributes ... 
+
+	return parameter_changed;
+}
+
+//getOperationInfo
+const char* Ocio_log_convert::getOperationInfo()
+{
+	return ocio_houdini_constants::OCIOLOGCONVERT_OPERATION_INFO;
 }
 
 //filter_static

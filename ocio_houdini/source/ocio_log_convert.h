@@ -194,6 +194,11 @@ protected:
 	//updateParmsFlags
 	bool updateParmsFlags();
 
+	//disableParms
+	unsigned disableParms();
+
+	//getOperationInfo
+	virtual const char* getOperationInfo();
 
 };
 

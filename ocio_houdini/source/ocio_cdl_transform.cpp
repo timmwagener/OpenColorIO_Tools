@@ -231,13 +231,11 @@ Ocio_cdl_transform::Ocio_cdl_transform(OP_Network* parent,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
-									log_messages(true),
-									internal_parms_visible(false)
+									log_messages(ocio_houdini_constants::LOG_MESSAGES),
+									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
-	//disable caching
-	enableDiskCache(false);
 };
 
 //~Ocio_cdl_transform
@@ -280,6 +278,7 @@ bool Ocio_cdl_transform::updateParmsFlags()
 	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_power.getToken(), internal_parms_visible);
 	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_saturation.getToken(), internal_parms_visible);
 	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_direction.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_node_or_file.getToken(), internal_parms_visible);
 	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_lut_file_path.getToken(), internal_parms_visible);
 	attribute_change_occured |= setVisibleState(ocio_cdl_transform_parameters::prm_last_cccid.getToken(), internal_parms_visible);
 
@@ -304,6 +303,12 @@ unsigned Ocio_cdl_transform::disableParms()
 	//again for other attributes ... 
 
 	return parameter_changed;
+}
+
+//getOperationInfo
+const char* Ocio_cdl_transform::getOperationInfo()
+{
+	return ocio_houdini_constants::OCIOCDLTRANSFORM_OPERATION_INFO;
 }
 
 //filter_static
@@ -513,16 +518,13 @@ void Ocio_cdl_transform::write_to_file(std::string& str_xml, std::string& file_p
 	//if open append
 	if (cc_file.is_open())
 	{
+		//write to file
 		cc_file << str_xml.c_str();
-		//log
-		log("Exported grade to: ");
-		log(file_path.c_str());
+		//print
+		std::cout << "Exported grade to: " << file_path.c_str() << std::endl;
 	}
 	else
-	{
-		log("Could not open and write to file");
-		log(file_path.c_str());
-	}
+		std::cout << "Could not open and write to file: " << file_path.c_str() << std::endl;
 		
 
 	//close
@@ -712,12 +714,17 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 		//node_or_file changed
 		else if (node_or_file != last_node_or_file)
 			set_processor(lut_file_path, cccid, direction, interpolation);
+		//direction changed
+		else if (direction != last_direction)
+			//set_processor
+			set_processor(lut_file_path, cccid, direction, interpolation);
 		//lut_file_path
 		else if (lut_file_path.compare(last_lut_file_path) != 0)
 			set_processor(lut_file_path, cccid, direction, interpolation);
 		//cccid
 		else if (cccid.compare(last_cccid) != 0)
 			set_processor(lut_file_path, cccid, direction, interpolation);
+		
 	}
 
 	//node_or_file == false
@@ -816,6 +823,8 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 
 	//component_count
 	context_data->component_count = plane->getVectorSize();
+
+
 	
 	//return
 	return context_data;

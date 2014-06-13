@@ -170,8 +170,8 @@ Ocio_colorspace::Ocio_colorspace(OP_Network* parent,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
 									first_execution(true),
-									log_messages(true),
-									internal_parms_visible(true)
+									log_messages(ocio_houdini_constants::LOG_MESSAGES),
+									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -216,6 +216,32 @@ bool Ocio_colorspace::updateParmsFlags()
 	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), internal_parms_visible);
 
 	return attribute_change_occured;
+}
+
+//disableParms
+unsigned Ocio_colorspace::disableParms()
+{
+
+	//parameter_changed
+	unsigned parameter_changed = COP2_MaskOp::disableParms();
+
+	//time
+	float time = get_time();
+	//env_or_file
+	int env_or_file = get_env_or_file(time);
+
+	parameter_changed += enableParm(ocio_colorspace_parameters::prm_config_file_path.getToken(), env_or_file);
+
+
+	//again for other attributes ... 
+
+	return parameter_changed;
+}
+
+//getOperationInfo
+const char* Ocio_colorspace::getOperationInfo()
+{
+	return ocio_houdini_constants::OCIOCOLORSPACE_OPERATION_INFO;
 }
 
 //filter_static
