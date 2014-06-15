@@ -178,6 +178,7 @@ private slots: //Slots
 	void test_method();
 	void ocio_test_method();
 	void print_image_and_label_size();
+	void print_baker_writers();
 
 
 public: //Event Handler

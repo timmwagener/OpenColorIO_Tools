@@ -521,8 +521,7 @@ void OCIO_view::create_bake_menu()
 		signal_mapper->setMapping(action_set_lut_format, index);
 
 		//signal -> signal_mapper
-		connect(action_set_lut_format, SIGNAL(triggered()),
-				signal_mapper, SLOT(map()));
+		connect(action_set_lut_format, SIGNAL(triggered()), signal_mapper, SLOT(map()));
 		//signal_mapper -> slot
 		connect(signal_mapper, SIGNAL(mapped(int)), this, SLOT(set_lut_format(int)));
 
@@ -665,6 +664,11 @@ void OCIO_view::create_dev_menu()
 	QAction* action_print_image_and_label_size = new QAction("Print image and label size", mnu_dev);
 	mnu_dev->addAction(action_print_image_and_label_size);
 	connect(action_print_image_and_label_size, SIGNAL(triggered()), this, SLOT(print_image_and_label_size()));
+
+	//action_print_baker_writers
+	QAction* action_print_baker_writers = new QAction("Print baker writers", mnu_dev);
+	mnu_dev->addAction(action_print_baker_writers);
+	connect(action_print_baker_writers, SIGNAL(triggered()), this, SLOT(print_baker_writers()));
 	
 };
 
@@ -1586,7 +1590,7 @@ void OCIO_view::inspect_begin(int pos_x, int pos_y)
 	{
 		//logging
 		if(logging < 1)
-			std::cout << "Inspect checked off" << std::endl;
+			//std::cout << "Inspect checked off" << std::endl;
 		return;
 	};
 
@@ -1678,7 +1682,7 @@ void OCIO_view::inspect_move(int pos_x, int pos_y)
 	{
 		//logging
 		if(logging < 1)
-			std::cout << "Inspect checked off" << std::endl;
+			//std::cout << "Inspect checked off" << std::endl;
 		return;
 	};
 
@@ -2255,7 +2259,39 @@ void OCIO_view::print_image_and_label_size()
 	return;
 };
 
+//print_baker_writers
+void OCIO_view::print_baker_writers()
+{
+	
+	//No config check
+	if (!config_exists())
+	{
+		//logging
+		if (logging < 1)
+			std::cout << "No config exists. Returning..." << std::endl;
 
+		return;
+	}
+
+	//baker
+	OCIO::BakerRcPtr baker = OCIO::Baker::Create();
+	
+	//set config
+	baker->setConfig(config);
+
+	//temp
+	std::cout << "Number of baker writers: " << baker->getNumFormats() << std::endl;
+
+	//number_formats
+	int number_formats = baker->getNumFormats();
+
+	//iterate and print names
+	for (int index = 0; index < number_formats; index++)
+	{
+		std::cout << baker->getFormatNameByIndex(index) << std::endl;
+	};
+
+};
 
 
 
