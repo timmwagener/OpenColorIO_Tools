@@ -300,7 +300,7 @@ unsigned Ocio_cdl_transform::disableParms()
 	parameter_changed += enableParm(ocio_cdl_transform_parameters::prm_lut_file_path.getToken(), node_or_file);
 	parameter_changed += enableParm(ocio_cdl_transform_parameters::prm_cccid.getToken(), node_or_file);
 
-	//hide scopergba always because correct transformation needs rgb color triplet
+	//disable scopergba always because correct transformation needs rgb color triplet
 	parameter_changed += enableParm("scopergba", false);
 
 	//again for other attributes ... 

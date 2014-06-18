@@ -216,6 +216,24 @@ bool Ocio_file_transform::updateParmsFlags()
 	return attribute_change_occured;
 }
 
+//disableParms
+unsigned Ocio_file_transform::disableParms()
+{
+
+	//parameter_changed
+	unsigned parameter_changed = COP2_MaskOp::disableParms();
+
+	//time
+	float time = get_time();
+
+	//disable scopergba always because correct transformation needs rgb color triplet
+	parameter_changed += enableParm("scopergba", false);
+
+	//again for other attributes ... 
+
+	return parameter_changed;
+}
+
 //getOperationInfo
 const char* Ocio_file_transform::getOperationInfo()
 {
@@ -239,70 +257,138 @@ OP_ERROR Ocio_file_transform::filter(COP2_Context& context,
 {
 
 	//log
-	log("execute filter");
-
+	log("filter");
 
 	//Pixel operation to perform is implemented here
 
 	//context_data
 	//Custom built in newContextData()
 	//Here live custom attributes stashed within single threaded method newContextData()
-	Ocio_file_transform_context_data* context_data = (Ocio_file_transform_context_data *)context.data();
 
-		
-	//Variables
-	int component_index;
-	
+	//Convert context like so if needed
+	//Ocio_cdl_transform_context_data* context_data = (Ocio_cdl_transform_context_data *)context.data();
 
-	//iterate components (rgba)
-	//Do colorspace transformation on single component basis (the only thing that works so far)
-	for (component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
+
+	//is_rgb_available
+	bool is_rgb_available = rgb_available(context, input, output);
+
+
+	//rgb available
+	if (is_rgb_available)
+		filter_ocio(context, input, output);
+	//rgb not available
+	else
+		filter_no_ocio(context, input, output);
+
+
+
+	//Return error
+	return error();
+};
+
+//rgb_available
+bool Ocio_file_transform::rgb_available(COP2_Context& context,
+	const TIL_Region* input,
+	TIL_Region* output)
+{
+	//is_rgb_available
+	bool is_rgb_available = false;
+
+	//ptr_input_data_red
+	float* ptr_input_data_red = (float*)input->getImageData("r");
+	//ptr_input_data_green
+	float* ptr_input_data_green = (float*)input->getImageData("g");
+	//ptr_input_data_blue
+	float* ptr_input_data_blue = (float*)input->getImageData("b");
+
+	//ptr_output_data_red
+	float* ptr_output_data_red = (float*)output->getImageData("r");
+	//ptr_output_data_green
+	float* ptr_output_data_green = (float*)output->getImageData("g");
+	//ptr_output_data_blue
+	float* ptr_output_data_blue = (float*)output->getImageData("b");
+
+	//check
+	if (ptr_input_data_red && ptr_input_data_green && ptr_input_data_blue && ptr_output_data_red && ptr_output_data_green && ptr_output_data_blue)
+		is_rgb_available = true;
+
+	//log
+	if (is_rgb_available)
+		log("RGB is available");
+	else
+		log("RGB is not available");
+
+	//return
+	return is_rgb_available;
+};
+
+//filter_ocio
+void Ocio_file_transform::filter_ocio(COP2_Context& context,
+	const TIL_Region* input,
+	TIL_Region* output)
+{
+
+	//ptr_input_data_red
+	float* ptr_input_data_red = (float*)input->getImageData("r");
+	//ptr_input_data_green
+	float* ptr_input_data_green = (float*)input->getImageData("g");
+	//ptr_input_data_blue
+	float* ptr_input_data_blue = (float*)input->getImageData("b");
+
+	//ptr_output_data_red
+	float* ptr_output_data_red = (float*)output->getImageData("r");
+	//ptr_output_data_green
+	float* ptr_output_data_green = (float*)output->getImageData("g");
+	//ptr_output_data_blue
+	float* ptr_output_data_blue = (float*)output->getImageData("b");
+
+
+	//copy input to output for rgb
+	std::memcpy(ptr_output_data_red, ptr_input_data_red, context.myXsize*context.myYsize * sizeof(float));
+	std::memcpy(ptr_output_data_green, ptr_input_data_green, context.myXsize*context.myYsize * sizeof(float));
+	std::memcpy(ptr_output_data_blue, ptr_input_data_blue, context.myXsize*context.myYsize * sizeof(float));
+
+
+	//if processor exists do colorspace conversion
+	if (processor_exists())
+	{
+		//color transform
+		OCIO_functionality::color_transform_rgb_array(ptr_output_data_red,
+			ptr_output_data_green,
+			ptr_output_data_blue,
+			processor,
+			context.myXsize,
+			context.myYsize);
+	}
+
+	//temp
+	else
+		log("From filter: Processor does not exist");
+};
+
+//filter_no_ocio
+void Ocio_file_transform::filter_no_ocio(COP2_Context& context,
+	const TIL_Region* input,
+	TIL_Region* output)
+{
+
+	//iterate components (rgba) and copy if existent
+	for (int component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
 	{
 		//Get image data for component of input region and output region
 		//(think of planes)
 		float* input_data_ptr = (float*)input->getImageData(component_index);
 		float* output_data_ptr = (float*)output->getImageData(component_index);
-		
+
 		//if ptrs are not null
 		if (input_data_ptr && output_data_ptr)
 		{
 			//copy input to output
-			memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-
-			//if processor exists do colorspace conversion
-			if (processor_exists())
-			{
-				//fill_data_ptr_1
-				float* fill_data_ptr_1 = new float[context.myXsize*context.myYsize * sizeof(float)];
-				memcpy(fill_data_ptr_1, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-				//fill_data_ptr_2
-				float* fill_data_ptr_2 = new float[context.myXsize*context.myYsize * sizeof(float)];
-				memcpy(fill_data_ptr_2, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-
-				//color transform
-				OCIO_functionality::color_transform_rgb_array(output_data_ptr,
-					fill_data_ptr_1,
-					fill_data_ptr_2,
-					processor,
-					context.myXsize,
-					context.myYsize);
-
-				//delete ptr
-				delete[] fill_data_ptr_1;
-				delete[] fill_data_ptr_2;
-			};
+			std::memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
 		};
 
-		
-		
-		
-
-	
 	};
 
-	
-	//Return error
-	return error();
 };
 
 
