@@ -333,101 +333,136 @@ OP_ERROR Ocio_cdl_transform::filter(COP2_Context& context,
 	//log
 	log("filter");
 
-
-
 	//Pixel operation to perform is implemented here
 
 	//context_data
 	//Custom built in newContextData()
 	//Here live custom attributes stashed within single threaded method newContextData()
-	Ocio_cdl_transform_context_data* context_data = (Ocio_cdl_transform_context_data *)context.data();
+
+	//Convert context like so if needed
+	//Ocio_cdl_transform_context_data* context_data = (Ocio_cdl_transform_context_data *)context.data();
 
 	
-	
-	//rgb_available
-	bool rgb_available = false;
+	//is_rgb_available
+	bool is_rgb_available = rgb_available(context, input, output);
 
-	//check rgb availability
-	if (context_data->channel_names.compare("rgb") == 0 || context_data->channel_names.compare("rgba") == 0)
-		rgb_available = true;
-
-	
 	
 	//rgb available
-	if (rgb_available)
-	{
-		//log
-		log("RGB is available");
-
-		//ptr_input_data_red
-		float* ptr_input_data_red = (float*)input->getImageData(0);
-		//ptr_input_data_green
-		float* ptr_input_data_green = (float*)input->getImageData(1);
-		//ptr_input_data_blue
-		float* ptr_input_data_blue = (float*)input->getImageData(2);
-
-		//ptr_output_data_red
-		float* ptr_output_data_red = (float*)output->getImageData(0);
-		//ptr_output_data_green
-		float* ptr_output_data_green = (float*)output->getImageData(1);
-		//ptr_output_data_blue
-		float* ptr_output_data_blue = (float*)output->getImageData(2);
-		
-		
-		//copy input to output for rgb
-		std::memcpy(ptr_output_data_red, ptr_input_data_red, context.myXsize*context.myYsize * sizeof(float));
-		std::memcpy(ptr_output_data_green, ptr_input_data_green, context.myXsize*context.myYsize * sizeof(float));
-		std::memcpy(ptr_output_data_blue, ptr_input_data_blue, context.myXsize*context.myYsize * sizeof(float));
-
-
-		//if processor exists do colorspace conversion
-		if (processor_exists())
-		{
-			//color transform
-			OCIO_functionality::color_transform_rgb_array(ptr_output_data_red,
-															ptr_output_data_green,
-															ptr_output_data_blue,
-															processor,
-															context.myXsize,
-															context.myYsize);
-		}
-
-		//temp
-		else
-			log("From filter: Processor does not exist");
-
-	}
-	
+	if (is_rgb_available)
+		filter_ocio(context, input, output);
 	//rgb not available
 	else
-	{
-
-		//log
-		log("RGB is NOT available");
-
-
-		//iterate components (rgba) and copy if existent
-		for (int component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
-		{
-			//Get image data for component of input region and output region
-			//(think of planes)
-			float* input_data_ptr = (float*)input->getImageData(component_index);
-			float* output_data_ptr = (float*)output->getImageData(component_index);
-
-			//if ptrs are not null
-			if (input_data_ptr && output_data_ptr)
-			{
-				//copy input to output
-				std::memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-			};
-
-		};
-	};
+		filter_no_ocio(context, input, output);
 	
 
 	
 	//Return error
 	return error();
+};
+
+//rgb_available
+bool Ocio_cdl_transform::rgb_available(COP2_Context& context,
+										const TIL_Region* input,
+										TIL_Region* output)
+{
+	//is_rgb_available
+	bool is_rgb_available = false;
+
+	//ptr_input_data_red
+	float* ptr_input_data_red = (float*)input->getImageData("r");
+	//ptr_input_data_green
+	float* ptr_input_data_green = (float*)input->getImageData("g");
+	//ptr_input_data_blue
+	float* ptr_input_data_blue = (float*)input->getImageData("b");
+
+	//ptr_output_data_red
+	float* ptr_output_data_red = (float*)output->getImageData("r");
+	//ptr_output_data_green
+	float* ptr_output_data_green = (float*)output->getImageData("g");
+	//ptr_output_data_blue
+	float* ptr_output_data_blue = (float*)output->getImageData("b");
+
+	//check
+	if (ptr_input_data_red && ptr_input_data_green && ptr_input_data_blue && ptr_output_data_red && ptr_output_data_green && ptr_output_data_blue)
+		is_rgb_available = true;
+
+	//log
+	if (is_rgb_available)
+		log("RGB is available");
+	else
+		log("RGB is not available");
+
+	//return
+	return is_rgb_available;
+};
+
+//filter_ocio
+void Ocio_cdl_transform::filter_ocio(COP2_Context& context,
+										const TIL_Region* input,
+										TIL_Region* output)
+{
+	
+	//ptr_input_data_red
+	float* ptr_input_data_red = (float*)input->getImageData("r");
+	//ptr_input_data_green
+	float* ptr_input_data_green = (float*)input->getImageData("g");
+	//ptr_input_data_blue
+	float* ptr_input_data_blue = (float*)input->getImageData("b");
+
+	//ptr_output_data_red
+	float* ptr_output_data_red = (float*)output->getImageData("r");
+	//ptr_output_data_green
+	float* ptr_output_data_green = (float*)output->getImageData("g");
+	//ptr_output_data_blue
+	float* ptr_output_data_blue = (float*)output->getImageData("b");
+
+
+	//copy input to output for rgb
+	std::memcpy(ptr_output_data_red, ptr_input_data_red, context.myXsize*context.myYsize * sizeof(float));
+	std::memcpy(ptr_output_data_green, ptr_input_data_green, context.myXsize*context.myYsize * sizeof(float));
+	std::memcpy(ptr_output_data_blue, ptr_input_data_blue, context.myXsize*context.myYsize * sizeof(float));
+
+
+	//if processor exists do colorspace conversion
+	if (processor_exists())
+	{
+		//color transform
+		OCIO_functionality::color_transform_rgb_array(ptr_output_data_red,
+			ptr_output_data_green,
+			ptr_output_data_blue,
+			processor,
+			context.myXsize,
+			context.myYsize);
+	}
+
+	//temp
+	else
+		log("From filter: Processor does not exist");
+};
+
+//filter_no_ocio
+void Ocio_cdl_transform::filter_no_ocio(COP2_Context& context,
+										const TIL_Region* input,
+										TIL_Region* output)
+{
+	
+	//iterate components (rgba) and copy if existent
+	for (int component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
+	{
+		//Get image data for component of input region and output region
+		//(think of planes)
+		float* input_data_ptr = (float*)input->getImageData(component_index);
+		float* output_data_ptr = (float*)output->getImageData(component_index);
+
+		//if ptrs are not null
+		if (input_data_ptr && output_data_ptr)
+		{
+			//copy input to output
+			std::memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
+		};
+
+	};
+
 };
 
 
@@ -864,21 +899,6 @@ COP2_ContextData* Ocio_cdl_transform::newContextData(const TIL_Plane* plane,
 
 	//component_count
 	context_data->component_count = plane->getVectorSize();
-
-	
-
-	//channel_names
-	context_data->channel_names.clear();
-
-	//iterate max component vector size and append to channel_names
-	for (int component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
-	{
-		if (plane->getSubName(component_index))
-			context_data->channel_names.append(plane->getSubName(component_index));
-	}
-	
-	//temp
-	log(context_data->channel_names.c_str());
 
 	
 	

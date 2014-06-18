@@ -113,6 +113,21 @@ public:
 	OP_ERROR filter(COP2_Context& context,
 					const TIL_Region* input,
 					TIL_Region* output);
+
+	//rgb_available
+	bool rgb_available(COP2_Context& context,
+		const TIL_Region* input,
+		TIL_Region* output);
+
+	//filter_ocio
+	void filter_ocio(COP2_Context& context,
+							const TIL_Region* input,
+							TIL_Region* output);
+
+	//filter_no_ocio
+	void filter_no_ocio(COP2_Context& context,
+		const TIL_Region* input,
+		TIL_Region* output);
 	
 	//Set information on how to thread
 	virtual void getMaxNumThreadsInCook(COP2_Context &,
@@ -227,7 +242,6 @@ public:
 	//Attributes
 	UT_Lock	 image_lock;
 	std::string plane_name;
-	std::string channel_names;
 	int component_count;
 
 	//Methods
