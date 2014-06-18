@@ -31,7 +31,7 @@ Definitions for OCIO_Houdini wide constants and types.
 namespace ocio_houdini_constants
 {
 	//LOG_MESSAGES
-	bool LOG_MESSAGES = false;
+	bool LOG_MESSAGES = true;
 	//INTERNAL_PARMS_VISIBLE
 	bool INTERNAL_PARMS_VISIBLE = false;
 

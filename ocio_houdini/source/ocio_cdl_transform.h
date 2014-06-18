@@ -227,6 +227,7 @@ public:
 	//Attributes
 	UT_Lock	 image_lock;
 	std::string plane_name;
+	std::string channel_names;
 	int component_count;
 
 	//Methods
