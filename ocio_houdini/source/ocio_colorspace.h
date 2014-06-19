@@ -80,6 +80,9 @@ public:
 	static PRM_Template template_list[];
 	static CH_LocalVariable local_variable_list[];
 	static const char* input_labels_list[];
+	//OCIO_houdini_functionality
+	//-----------------------------------------------
+	OCIO_houdini_functionality OCIO_houdini_functionality;
 	//OCIO
 	//-----------------------------------------------
 	OCIO::ConstConfigRcPtr config;
@@ -88,8 +91,6 @@ public:
 	//Misc
 	//-----------------------------------------------
 	bool first_execution;
-	bool log_messages;
-	bool internal_parms_visible;
 
 	
 	
@@ -113,11 +114,6 @@ public:
 									const TIL_Region* input,
 									TIL_Region* output,
 									COP2_Node* node);
-		
-	//non-static filter called in static filter
-	OP_ERROR filter(COP2_Context& context,
-					const TIL_Region* input,
-					TIL_Region* output);
 	
 	//Set information on how to thread
 	virtual void getMaxNumThreadsInCook(COP2_Context &,
@@ -157,10 +153,6 @@ public:
 	void env_or_file_changed();
 	void colorspace_changed();
 	void config_file_path_changed();
-	//Misc
-	//-----------------------------------------------
-	void log(const char*);
-	float get_time();
 	//Getter & Setter
 	//-----------------------------------------------
 	bool get_env_or_file(float time);

@@ -169,9 +169,7 @@ Ocio_colorspace::Ocio_colorspace(OP_Network* parent,
 									const char* name,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
-									first_execution(true),
-									log_messages(ocio_houdini_constants::LOG_MESSAGES),
-									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
+									first_execution(true)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -210,10 +208,10 @@ bool Ocio_colorspace::updateParmsFlags()
 	bool attribute_change_occured = COP2_MaskOp::updateParmsFlags();
 	
 	//Set attrs. invisible
-	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_env_or_file.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_config_file_path.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_input_colorspace_index.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_env_or_file.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_last_config_file_path.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_input_colorspace_index.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_colorspace_parameters::prm_internal_output_colorspace_index.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
 
 	return attribute_change_occured;
 }
@@ -226,12 +224,14 @@ unsigned Ocio_colorspace::disableParms()
 	unsigned parameter_changed = COP2_MaskOp::disableParms();
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 	//env_or_file
 	int env_or_file = get_env_or_file(time);
 
 	parameter_changed += enableParm(ocio_colorspace_parameters::prm_config_file_path.getToken(), env_or_file);
 
+	//disable scopergba always because correct transformation needs rgb color triplet
+	parameter_changed += enableParm("scopergba", ocio_houdini_constants::ENABLE_SCOPERGBA);
 
 	//again for other attributes ... 
 
@@ -246,84 +246,21 @@ const char* Ocio_colorspace::getOperationInfo()
 
 //filter_static
 OP_ERROR Ocio_colorspace::filter_static(COP2_Context& context,
-											const TIL_Region* input,
-											TIL_Region* output,
-											COP2_Node* node)
+										const TIL_Region* input,
+										TIL_Region* output,
+										COP2_Node* node)
 {
 	//call filter (pure convenience to avoid working in static function)
-	return ((Ocio_colorspace*)node)->filter(context, input, output);
-};
-
-//filter
-OP_ERROR Ocio_colorspace::filter(COP2_Context& context,
-	const TIL_Region* input,
-	TIL_Region* output)
-{
-
-	//Pixel operation to perform is implemented here
-
-	//context_data
-	//Custom built in newContextData()
-	//Here live custom attributes stashed within single threaded method newContextData()
-	Ocio_colorspace_context_data* context_data = (Ocio_colorspace_context_data *)context.data();
-
-		
-	//Variables
-	int component_count = context_data->component_count;
-	int component_index;
-	
-
-	//iterate components (rgba)
-	//Do colorspace transformation on single component basis (the only thing that works so far)
-	for (component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
-	{
-		//Get image data for component of input region and output region
-		//(think of planes)
-		float* input_data_ptr = (float*)input->getImageData(component_index);
-		float* output_data_ptr = (float*)output->getImageData(component_index);
-		
-		//if ptrs are not null
-		if (input_data_ptr && output_data_ptr)
-		{
-			//copy input to output
-			memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-
-			//if processor exists do colorspace conversion
-			if (processor_exists())
-			{
-				//fill_data_ptr_1
-				float* fill_data_ptr_1 = new float[context.myXsize*context.myYsize * sizeof(float)];
-				memcpy(fill_data_ptr_1, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-				//fill_data_ptr_2
-				float* fill_data_ptr_2 = new float[context.myXsize*context.myYsize * sizeof(float)];
-				memcpy(fill_data_ptr_2, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-
-				//color transform
-				OCIO_functionality::color_transform_rgb_array(output_data_ptr,
-					fill_data_ptr_1,
-					fill_data_ptr_2,
-					processor,
-					context.myXsize,
-					context.myYsize);
-
-				//delete ptr
-				delete[] fill_data_ptr_1;
-				delete[] fill_data_ptr_2;
-			};
-
-			
-		};
-	
-	};
-
-	
-
-
-	
+	((Ocio_colorspace*)node)->OCIO_houdini_functionality.filter(context,
+																input,
+																output,
+																((Ocio_colorspace*)node)->processor);
 
 	//Return error
-	return error();
+	return ((Ocio_colorspace*)node)->error();
 };
+
+
 
 
 //OCIO
@@ -334,7 +271,7 @@ OP_ERROR Ocio_colorspace::filter(COP2_Context& context,
 void Ocio_colorspace::set_config(int env_or_file)
 {
 	//log
-	log("set_config");
+	OCIO_houdini_functionality.log("set_config");
 
 	//env
 	if (env_or_file == 0)
@@ -343,7 +280,7 @@ void Ocio_colorspace::set_config(int env_or_file)
 	else
 	{	
 		//time
-		float time = get_time();
+		float time = OCIO_houdini_functionality.get_time();
 		//config_file_path
 		std::string config_file_path(get_config_file_path(time));
 		//config
@@ -370,12 +307,12 @@ void Ocio_colorspace::set_processor()
 		//set processor to 0
 		processor = 0;
 		//log
-		log("Config does not exist. Processor not created.");
+		OCIO_houdini_functionality.log("Config does not exist. Processor not created.");
 		return;
 	};
 
 	//log
-	log("Set Processor.");
+	OCIO_houdini_functionality.log("Set Processor.");
 
 
 	//input_colorspace_name
@@ -403,7 +340,7 @@ bool Ocio_colorspace::processor_exists()
 void Ocio_colorspace::set_colorspace_names()
 {
 	//log
-	log("Set Colorspace names.");
+	OCIO_houdini_functionality.log("Set Colorspace names.");
 
 	//vec_colorspace_names
 	vec_colorspace_names = OCIO_functionality::get_colorspace_names(config);
@@ -423,7 +360,7 @@ void Ocio_colorspace::print_config_info()
 void Ocio_colorspace::node_created()
 {
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 	
 	//set config
 	set_config(get_env_or_file(time));
@@ -475,7 +412,7 @@ void Ocio_colorspace::env_or_file_changed()
 {
 	
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//set config
 	set_config(get_env_or_file(time));
@@ -524,7 +461,7 @@ void Ocio_colorspace::colorspace_changed()
 void Ocio_colorspace::config_file_path_changed()
 {
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//config from env, then return
 	if (!get_env_or_file(time))
@@ -665,26 +602,7 @@ COP2_ContextData* Ocio_colorspace::newContextData(const TIL_Plane* plane,
 //void Ocio_image_filter::computeImageBounds(COP2_Context&)
 //{};
 
-//log
-void Ocio_colorspace::log(const char* msg)
-{
-	//log message if log_messages == true
-	if (log_messages)
-		std::cout << msg << std::endl;
-}
 
-//get_time
-float Ocio_colorspace::get_time()
-{
-	//ch_manager
-	CH_Manager* ch_manager = OPgetDirector()->getChannelManager();
-	//fpreal_current_time
-	fpreal fpreal_current_time = ch_manager->getEvaluateTime();
-	//float_current_Time
-	float float_current_time = (float)fpreal_current_time;
-
-	return float_current_time;
-}
 
 
 
@@ -763,7 +681,7 @@ std::string Ocio_colorspace::get_colorspace(Colorspace_in_or_out colorspace_in_o
 {
 
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//ut_input_colorspace_name
 	UT_String ut_colorspace_name;
@@ -788,7 +706,7 @@ std::string Ocio_colorspace::get_colorspace(Colorspace_in_or_out colorspace_in_o
 int Ocio_colorspace::get_colorspace_index(Colorspace_in_or_out colorspace_in_or_out)
 {
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//colorspace_index
 	int colorspace_index;
@@ -811,7 +729,7 @@ void Ocio_colorspace::set_colorspace_by_index(int new_colorspace_index,
 	Colorspace_in_or_out colorspace_in_or_out)
 {
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
@@ -829,7 +747,7 @@ void Ocio_colorspace::set_colorspace_by_index(int new_colorspace_index,
 int Ocio_colorspace::get_internal_colorspace_index(Colorspace_in_or_out colorspace_in_or_out)
 {
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//internal_colorspace_index
 	int internal_colorspace_index;
@@ -854,7 +772,7 @@ void Ocio_colorspace::set_internal_colorspace_index(int new_internal_colorspace_
 														Colorspace_in_or_out colorspace_in_or_out)
 {
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//OUTPUT_COLORSPACE
 	if (colorspace_in_or_out)
@@ -874,7 +792,7 @@ void Ocio_colorspace::set_config_info()
 	std_config_info = OCIO_functionality::get_config_info(config);
 
 	//current_time
-	fpreal current_time = get_time();
+	fpreal current_time = OCIO_houdini_functionality.get_time();
 
 	//ut_config_info
 	UT_String ut_config_info(std_config_info);

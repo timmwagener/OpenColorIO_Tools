@@ -167,9 +167,7 @@ Ocio_file_transform::Ocio_file_transform(OP_Network* parent,
 									const char* name,
 									OP_Operator* op)
 									: COP2_MaskOp(parent, name, op), 
-									first_execution(true),
-									log_messages(ocio_houdini_constants::LOG_MESSAGES ),
-									internal_parms_visible(ocio_houdini_constants::INTERNAL_PARMS_VISIBLE)
+									first_execution(true)
 {
 	//set default scope (which planes are affected by default)
 	setDefaultScope(true, false, 0);
@@ -202,16 +200,16 @@ OP_ERROR Ocio_file_transform::doCookMyTile(COP2_Context& context, TIL_TileList* 
 bool Ocio_file_transform::updateParmsFlags()
 {
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 	
 	//attribute_change_occured (assign value from superclass function call)
 	bool attribute_change_occured = COP2_MaskOp::updateParmsFlags();
 	
 	//Set attrs. invisible
-	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_lut_file_path.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_cccid.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_direction.getToken(), internal_parms_visible);
-	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_interpolation.getToken(), internal_parms_visible);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_lut_file_path.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_cccid.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_direction.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
+	attribute_change_occured |= setVisibleState(ocio_file_transform_parameters::prm_last_interpolation.getToken(), ocio_houdini_constants::INTERNAL_PARMS_VISIBLE);
 	
 	return attribute_change_occured;
 }
@@ -219,15 +217,14 @@ bool Ocio_file_transform::updateParmsFlags()
 //disableParms
 unsigned Ocio_file_transform::disableParms()
 {
+	//time
+	float time = OCIO_houdini_functionality.get_time();
 
 	//parameter_changed
 	unsigned parameter_changed = COP2_MaskOp::disableParms();
 
-	//time
-	float time = get_time();
-
 	//disable scopergba always because correct transformation needs rgb color triplet
-	parameter_changed += enableParm("scopergba", false);
+	parameter_changed += enableParm("scopergba", ocio_houdini_constants::ENABLE_SCOPERGBA);
 
 	//again for other attributes ... 
 
@@ -247,149 +244,17 @@ OP_ERROR Ocio_file_transform::filter_static(COP2_Context& context,
 											COP2_Node* node)
 {
 	//call filter (pure convenience to avoid working in static function)
-	return ((Ocio_file_transform*)node)->filter(context, input, output);
-};
-
-//filter
-OP_ERROR Ocio_file_transform::filter(COP2_Context& context,
-	const TIL_Region* input,
-	TIL_Region* output)
-{
-
-	//log
-	log("filter");
-
-	//Pixel operation to perform is implemented here
-
-	//context_data
-	//Custom built in newContextData()
-	//Here live custom attributes stashed within single threaded method newContextData()
-
-	//Convert context like so if needed
-	//Ocio_cdl_transform_context_data* context_data = (Ocio_cdl_transform_context_data *)context.data();
-
-
-	//is_rgb_available
-	bool is_rgb_available = rgb_available(context, input, output);
-
-
-	//rgb available
-	if (is_rgb_available)
-		filter_ocio(context, input, output);
-	//rgb not available
-	else
-		filter_no_ocio(context, input, output);
-
-
+	((Ocio_file_transform*)node)->OCIO_houdini_functionality.filter(context, 
+																	input, 
+																	output, 
+																	((Ocio_file_transform*)node)->processor);
 
 	//Return error
-	return error();
+	return ((Ocio_file_transform*)node)->error();
 };
 
-//rgb_available
-bool Ocio_file_transform::rgb_available(COP2_Context& context,
-	const TIL_Region* input,
-	TIL_Region* output)
-{
-	//is_rgb_available
-	bool is_rgb_available = false;
-
-	//ptr_input_data_red
-	float* ptr_input_data_red = (float*)input->getImageData("r");
-	//ptr_input_data_green
-	float* ptr_input_data_green = (float*)input->getImageData("g");
-	//ptr_input_data_blue
-	float* ptr_input_data_blue = (float*)input->getImageData("b");
-
-	//ptr_output_data_red
-	float* ptr_output_data_red = (float*)output->getImageData("r");
-	//ptr_output_data_green
-	float* ptr_output_data_green = (float*)output->getImageData("g");
-	//ptr_output_data_blue
-	float* ptr_output_data_blue = (float*)output->getImageData("b");
-
-	//check
-	if (ptr_input_data_red && ptr_input_data_green && ptr_input_data_blue && ptr_output_data_red && ptr_output_data_green && ptr_output_data_blue)
-		is_rgb_available = true;
-
-	//log
-	if (is_rgb_available)
-		log("RGB is available");
-	else
-		log("RGB is not available");
-
-	//return
-	return is_rgb_available;
-};
-
-//filter_ocio
-void Ocio_file_transform::filter_ocio(COP2_Context& context,
-	const TIL_Region* input,
-	TIL_Region* output)
-{
-
-	//ptr_input_data_red
-	float* ptr_input_data_red = (float*)input->getImageData("r");
-	//ptr_input_data_green
-	float* ptr_input_data_green = (float*)input->getImageData("g");
-	//ptr_input_data_blue
-	float* ptr_input_data_blue = (float*)input->getImageData("b");
-
-	//ptr_output_data_red
-	float* ptr_output_data_red = (float*)output->getImageData("r");
-	//ptr_output_data_green
-	float* ptr_output_data_green = (float*)output->getImageData("g");
-	//ptr_output_data_blue
-	float* ptr_output_data_blue = (float*)output->getImageData("b");
 
 
-	//copy input to output for rgb
-	std::memcpy(ptr_output_data_red, ptr_input_data_red, context.myXsize*context.myYsize * sizeof(float));
-	std::memcpy(ptr_output_data_green, ptr_input_data_green, context.myXsize*context.myYsize * sizeof(float));
-	std::memcpy(ptr_output_data_blue, ptr_input_data_blue, context.myXsize*context.myYsize * sizeof(float));
-
-
-	//if processor exists do colorspace conversion
-	if (processor_exists())
-	{
-		//color transform
-		OCIO_functionality::color_transform_rgb_array(ptr_output_data_red,
-			ptr_output_data_green,
-			ptr_output_data_blue,
-			processor,
-			context.myXsize,
-			context.myYsize);
-	}
-
-	//temp
-	else
-		log("From filter: Processor does not exist");
-};
-
-//filter_no_ocio
-void Ocio_file_transform::filter_no_ocio(COP2_Context& context,
-	const TIL_Region* input,
-	TIL_Region* output)
-{
-
-	//iterate components (rgba) and copy if existent
-	for (int component_index = 0; component_index < PLANE_MAX_VECTOR_SIZE; component_index++)
-	{
-		//Get image data for component of input region and output region
-		//(think of planes)
-		float* input_data_ptr = (float*)input->getImageData(component_index);
-		float* output_data_ptr = (float*)output->getImageData(component_index);
-
-		//if ptrs are not null
-		if (input_data_ptr && output_data_ptr)
-		{
-			//copy input to output
-			std::memcpy(output_data_ptr, input_data_ptr, context.myXsize*context.myYsize * sizeof(float));
-		};
-
-	};
-
-};
 
 
 //OCIO
@@ -419,9 +284,9 @@ void Ocio_file_transform::set_processor(std::string lut_file_path_value,
 
 	//display msg
 	if (!lut_file_path_value.size())
-		log(msg_set_processor_failure.c_str());
+		OCIO_houdini_functionality.log(msg_set_processor_failure.c_str());
 	else
-		log(msg_set_processor_success.c_str());
+		OCIO_houdini_functionality.log(msg_set_processor_success.c_str());
 
 };
 
@@ -571,26 +436,6 @@ COP2_ContextData* Ocio_file_transform::newContextData(const TIL_Plane* plane,
 	return context_data;
 };
 
-//log
-void Ocio_file_transform::log(const char* msg)
-{
-	//log message if log_messages == true
-	if (log_messages)
-		std::cout << msg << std::endl;
-}
-
-//get_time
-float Ocio_file_transform::get_time()
-{
-	//ch_manager
-	CH_Manager* ch_manager = OPgetDirector()->getChannelManager();
-	//fpreal_current_time
-	fpreal fpreal_current_time = ch_manager->getEvaluateTime();
-	//float_current_Time
-	float float_current_time = (float)fpreal_current_time;
-
-	return float_current_time;
-}
 
 
 
@@ -606,7 +451,7 @@ int Ocio_file_transform::get_int_parameter(const char* parameter_name)
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//result
 	int result = evalInt(ut_parameter_name, 0, time);
@@ -621,7 +466,7 @@ bool Ocio_file_transform::get_bool_parameter(const char* parameter_name)
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//result
 	bool result = evalInt(ut_parameter_name, 0, time);
@@ -636,7 +481,7 @@ float Ocio_file_transform::get_float_parameter(const char* parameter_name)
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//result
 	float result = evalFloat(ut_parameter_name, 0, time);
@@ -651,7 +496,7 @@ std::string Ocio_file_transform::get_string_parameter(const char* parameter_name
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 	
 	//ut_result
 	UT_String ut_result;
@@ -675,7 +520,7 @@ void Ocio_file_transform::set_parameter(const char* parameter_name, std::string 
 	UT_String ut_parameter_value(parameter_value);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//set parameter_value
 	setString(ut_parameter_value, CH_STRING_LITERAL, ut_parameter_name, 0, time);
@@ -688,7 +533,7 @@ void Ocio_file_transform::set_parameter(const char* parameter_name, int paramete
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//setInt
 	setInt(ut_parameter_name, 0, time, parameter_value);
@@ -701,7 +546,7 @@ void Ocio_file_transform::set_parameter(const char* parameter_name, float parame
 	UT_String ut_parameter_name(parameter_name);
 
 	//time
-	float time = get_time();
+	float time = OCIO_houdini_functionality.get_time();
 
 	//setFloat
 	setFloat(ut_parameter_name, 0, time, parameter_value);
