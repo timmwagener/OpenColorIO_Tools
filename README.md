@@ -13,6 +13,12 @@ Abstract - What is OCIO
 
 [![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_mari.jpg)](http://www.youtube.com/watch?v=fE5MOpmcQE0)
 
+<p style="float: left;">
+	<img src="http://www.kiiia.com/opencolorio/opencolorio.jpg">
+	<img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg">
+	<img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg">
+</p>
+
 -----------------------
 
 [OpenColorIO](http://opencolorio.org/) is a library developed by Sony Pictures Imageworks, where it is part of their OpenSource initiative amongst other libraries and frameworks like OIIO, Alembic and OSL to name few.
