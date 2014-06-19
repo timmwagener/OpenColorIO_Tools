@@ -2,21 +2,16 @@
 OpenColorIO_Tools
 =================
 
-My set of OpenColorIO tools and plugins. It currently contains a plugins for Houdini and Maya, as well as a tiny Qt standalone application
+My set of OpenColorIO tools and plugins. It currently contains plugins for Houdini and Maya, as well as a tiny Qt standalone application.
 
 Abstract - What is OCIO
 -----------------------
 
-[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio.jpg)](http://www.youtube.com/watch?v=MjsDBI0UOYU)
-
-[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg)](http://www.youtube.com/watch?v=fxIoVr9fBVU)
-
-[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_mari.jpg)](http://www.youtube.com/watch?v=fE5MOpmcQE0)
-
 <p style="float: left;">
-	<img src="http://www.kiiia.com/opencolorio/opencolorio.jpg">
-	<img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg">
-	<img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg">
+	<a href="http://www.youtube.com/watch?v=MjsDBI0UOYU"><img src="http://www.kiiia.com/opencolorio/opencolorio.jpg"></a>
+	<a href="http://www.youtube.com/watch?v=fxIoVr9fBVU"><img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg"></a>
+	<a href="http://www.youtube.com/watch?v=fE5MOpmcQE0"><img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg"></a>
+	<a href="http://timmwagener.com/ocio.html"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.jpg"></a>
 </p>
 
 -----------------------
@@ -26,6 +21,8 @@ Abstract - What is OCIO
  a set of LUTs that can be used. [OCIO](http://opencolorio.org/) provides an interface to a variety of LUT formats, in much the same way as OIIO does to image formats. These LUTs are then used for colortransformation on the CPU or GPU.
 [OCIO](http://opencolorio.org/) is increasingly used in commercial software like NUKE or MARI. [here](http://opencolorio.org/CompatibleSoftware.html) is a list of compatible software.
 
+-----------------------
+
 Goal of OpenColorIO_Tools
 -------------------------
 
@@ -33,6 +30,8 @@ Since [OCIO](http://opencolorio.org/) is a color management solution geared towa
 Therefore the primary goal is to create a set of Houdini COP nodes (Houdinis compositing  network) as equivalents to the NUKE OCIO nodes which ship natively.
 Additionaly i plan on developing a set of Maya nodes for color managing textures, to become familiar with the library.
 My personal interest in this project is to enhance my C++ programming and to become familiar with the Houdini Development Kit.
+
+-----------------------
 
 Nuke OCIO nodes for Houdini
 ---------------------------
