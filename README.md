@@ -10,10 +10,10 @@ Abstract - What is OCIO
 -----------------------
 
 <p style="float: left;">
-	<a href="http://www.youtube.com/watch?v=MjsDBI0UOYU"><img src="http://www.kiiia.com/opencolorio/opencolorio.jpg"></a>
-	<a href="http://www.youtube.com/watch?v=fxIoVr9fBVU"><img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg"></a>
-	<a href="http://www.youtube.com/watch?v=fE5MOpmcQE0"><img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg"></a>
-	<a href="http://timmwagener.com/ocio.html"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.png"></a>
+	<a href="http://www.youtube.com/watch?v=MjsDBI0UOYU" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio.jpg"></a>
+	<a href="http://www.youtube.com/watch?v=fxIoVr9fBVU" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg"></a>
+	<a href="http://www.youtube.com/watch?v=fE5MOpmcQE0" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg"></a>
+	<a href="http://timmwagener.com/ocio.html" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.png"></a>
 </p>
 
 -----------------------
