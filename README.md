@@ -8,13 +8,10 @@ Abstract - What is OCIO
 -----------------------
 
 [![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio.jpg)](http://www.youtube.com/watch?v=MjsDBI0UOYU)
-Watch the official introduction video from SPI.
 
 [![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg)](http://www.youtube.com/watch?v=fxIoVr9fBVU)
-Watch the official OCIO feature presentation for NUKE (start at 6:30 min.)
 
 [![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_mari.jpg)](http://www.youtube.com/watch?v=fE5MOpmcQE0)
-Watch the official OCIO feature presentation for MARI.
 
 -----------------------
 
