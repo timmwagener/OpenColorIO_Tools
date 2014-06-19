@@ -4,6 +4,8 @@ OpenColorIO_Tools
 
 My set of OpenColorIO tools and plugins. It currently contains plugins for Houdini and Maya, as well as a tiny Qt standalone application.
 
+-----------------------
+
 Abstract - What is OCIO
 -----------------------
 
@@ -11,7 +13,7 @@ Abstract - What is OCIO
 	<a href="http://www.youtube.com/watch?v=MjsDBI0UOYU"><img src="http://www.kiiia.com/opencolorio/opencolorio.jpg"></a>
 	<a href="http://www.youtube.com/watch?v=fxIoVr9fBVU"><img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg"></a>
 	<a href="http://www.youtube.com/watch?v=fE5MOpmcQE0"><img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg"></a>
-	<a href="http://timmwagener.com/ocio.html"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.jpg"></a>
+	<a href="http://timmwagener.com/ocio.html"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.png"></a>
 </p>
 
 -----------------------
@@ -48,4 +50,4 @@ The list of nodes i want to make available as Houdini COP2 nodes
 	Do a color transformation from Lin to Log, or the other way round, based on the Lin and Log roles of the given .ocio config file.
 
 
-For more infos visit [this](http://www.timmwagener.com/ocio.html).
+For more infos visit [my website](http://www.timmwagener.com/ocio.html).
