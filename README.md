@@ -7,7 +7,16 @@ My set of OpenColorIO tools and plugins. It currently contains a plugins for Hou
 Abstract - What is OCIO
 -----------------------
 
-[![ScreenShot](http://www.kiiia.com/helga/documentation/build/html/_images/assets_and_shots_pipeline_chart.png)](http://www.youtube.com/watch?v=MjsDBI0UOYU)
+[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio.jpg)](http://www.youtube.com/watch?v=MjsDBI0UOYU)
+Watch the official introduction video from SPI.
+
+[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg)](http://www.youtube.com/watch?v=fxIoVr9fBVU)
+Watch the official OCIO feature presentation for NUKE (start at 6:30 min.)
+
+[![ScreenShot](http://www.kiiia.com/opencolorio/opencolorio_mari.jpg)](http://www.youtube.com/watch?v=fE5MOpmcQE0)
+Watch the official OCIO feature presentation for MARI.
+
+-----------------------
 
 [OpenColorIO](http://opencolorio.org/) is a library developed by Sony Pictures Imageworks, where it is part of their OpenSource initiative amongst other libraries and frameworks like OIIO, Alembic and OSL to name few.
 [OCIO](http://opencolorio.org/) aims to enable consistent color management across programs by providing a unified color environment. Central to this is the idea of .ocio files which define the working color environment, by specifying
