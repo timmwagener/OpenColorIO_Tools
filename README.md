@@ -2,7 +2,7 @@
 OpenColorIO_Tools
 =================
 
-My set of OpenColorIO tools and plugins. It currently contains plugins for Houdini and Maya, as well as a tiny Qt standalone application.
+My set of OpenColorIO tools and plugins. It currently contains plugins for Houdini and Maya, as well as a tiny Qt standalone application. [Download a precompiled binary here](http://www.kiiia.com/opencolorio/OpenColorIO_houdini_install.zip).
 
 -----------------------
 
@@ -13,7 +13,7 @@ Abstract - What is OCIO
 	<a href="http://www.youtube.com/watch?v=MjsDBI0UOYU" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio.jpg"></a>
 	<a href="http://www.youtube.com/watch?v=fxIoVr9fBVU" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_nuke.jpg"></a>
 	<a href="http://www.youtube.com/watch?v=fE5MOpmcQE0" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_mari.jpg"></a>
-	<a href="http://timmwagener.com/ocio.html" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.png"></a>
+	<a href="https://vimeo.com/98284456" target="_blank"><img src="http://www.kiiia.com/opencolorio/opencolorio_houdini.png"></a>
 </p>
 
 -----------------------
